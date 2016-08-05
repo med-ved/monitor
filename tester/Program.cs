@@ -61,8 +61,7 @@ namespace tester
             };
             Database.Save(status);
             var processed = Database.IsFlatProcessed(flat.Id, date);
-            Database.Save(status);
-            processed = Database.IsFlatProcessed(flat.Id, date);
+
             //var result = reader.CheckFlatStatus(request);*/
 
             Console.WriteLine("DONE. Time: " + DateTime.Now);

@@ -37,8 +37,6 @@ namespace DataMiner
 
                 //Execute Inser, Update & Delete queries in the database*/
                 context.SaveChanges();
-
-                //var p = context.FlatStatuses.Any(s => s.FlatId == flat.Id && s.Date == newStatus.Date);
             }
         }
 
@@ -63,20 +61,7 @@ namespace DataMiner
         {
             using (var context = new MonitorEntities())
             {
-                var flat = context.Flats.FirstOrDefault(f => f.Id == flatId);
-                if (flat == null)
-                {
-                    return false;
-                }
-
-                //return context.FlatStatuses.Where<FlatStatuses>(s => s.FlatId == flatId && s.Date == date).FirstOrDefault<FlatStatuses>() != null;
-                var bbb = context.FlatStatuses.Any(s => s.FlatId.Value == flatId);
-                var bbb2 = context.FlatStatuses.Any(s => s.Date == date);
-                var bbb3 = context.FlatStatuses.Any(s => s.FlatId.Value == flatId && s.Date == date);
-                var all = context.FlatStatuses.ToList();
-                var b = all[0].FlatId.Value == flatId;
-                var exist = all.Any(s => s.FlatId.Value == flatId);
-                return exist;
+                return context.FlatStatuses.Any(s => s.FlatId.Value == flatId && s.Date == date); 
             }
         }
 
