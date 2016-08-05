@@ -1,1 +1,4 @@
 *.cache
+/airbnbmonitor/bin
+/DataMiner/bin
+/DataMiner/obj
