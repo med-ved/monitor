@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Хранилище MonitorModel" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Flats">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" />
+          <Property Name="Latitude" Type="real" />
+          <Property Name="Longitude" Type="real" />
+          <Property Name="Country" Type="varchar(max)" />
+          <Property Name="City" Type="varchar(max)" />
+          <Property Name="Description" Type="varchar(max)" />
+          <Property Name="Rating" Type="real" />
+        </EntityType>
+        <EntityType Name="FlatStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="datetime" />
+          <Property Name="Price" Type="smallint" />
+          <Property Name="Available" Type="bit" />
+          <Property Name="FlatId" Type="bigint" />
+        </EntityType>
+        <Association Name="FK_FlatStatuses_Flats">
+          <End Role="Flats" Type="Self.Flats" Multiplicity="0..1" />
+          <End Role="FlatStatuses" Type="Self.FlatStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flats">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FlatStatuses">
+              <PropertyRef Name="FlatId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище MonitorModelContainer">
+          <EntitySet Name="Flats" EntityType="Self.Flats" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FlatStatuses" EntityType="Self.FlatStatuses" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_FlatStatuses_Flats" Association="Self.FK_FlatStatuses_Flats">
+            <End Role="Flats" EntitySet="Flats" />
+            <End Role="FlatStatuses" EntitySet="FlatStatuses" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MonitorModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="MonitorEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Flats" EntityType="MonitorModel.Flats" />
+          <EntitySet Name="FlatStatuses" EntityType="MonitorModel.FlatStatuses" />
+          <AssociationSet Name="FK_FlatStatuses_Flats" Association="MonitorModel.FK_FlatStatuses_Flats">
+            <End Role="Flats" EntitySet="Flats" />
+            <End Role="FlatStatuses" EntitySet="FlatStatuses" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Flats">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" />
+          <Property Name="Latitude" Type="Single" />
+          <Property Name="Longitude" Type="Single" />
+          <Property Name="Country" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="Single" />
+          <NavigationProperty Name="FlatStatuses" Relationship="MonitorModel.FK_FlatStatuses_Flats" FromRole="Flats" ToRole="FlatStatuses" />
+        </EntityType>
+        <EntityType Name="FlatStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Price" Type="Int16" />
+          <Property Name="Available" Type="Boolean" />
+          <Property Name="FlatId" Type="Int64" />
+          <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_FlatStatuses_Flats" FromRole="FlatStatuses" ToRole="Flats" />
+        </EntityType>
+        <Association Name="FK_FlatStatuses_Flats">
+          <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="0..1" />
+          <End Type="MonitorModel.FlatStatuses" Role="FlatStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flats">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FlatStatuses">
+              <PropertyRef Name="FlatId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище MonitorModelContainer" CdmEntityContainer="MonitorEntities">
+          <EntitySetMapping Name="Flats">
+            <EntityTypeMapping TypeName="MonitorModel.Flats">
+              <MappingFragment StoreEntitySet="Flats">
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FlatStatuses">
+            <EntityTypeMapping TypeName="MonitorModel.FlatStatuses">
+              <MappingFragment StoreEntitySet="FlatStatuses">
+                <ScalarProperty Name="FlatId" ColumnName="FlatId" />
+                <ScalarProperty Name="Available" ColumnName="Available" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

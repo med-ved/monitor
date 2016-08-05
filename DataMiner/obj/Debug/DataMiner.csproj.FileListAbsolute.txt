@@ -1,0 +1,14 @@
+c:\users\slon\documents\visual studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\DataMiner.dll
+c:\users\slon\documents\visual studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\DataMiner.pdb
+c:\users\slon\documents\visual studio 2015\Projects\airbnbmonitor\DataMiner\obj\Debug\DataMiner.csprojResolveAssemblyReference.cache
+c:\users\slon\documents\visual studio 2015\Projects\airbnbmonitor\DataMiner\obj\Debug\DataMiner.dll
+c:\users\slon\documents\visual studio 2015\Projects\airbnbmonitor\DataMiner\obj\Debug\DataMiner.pdb
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\CsQuery.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\CsQuery.xml
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\DataMiner.dll.config
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\EntityFramework.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\EntityFramework.xml
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\ru\EntityFramework.resources.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\DataMiner\bin\Debug\ru\EntityFramework.SqlServer.resources.dll

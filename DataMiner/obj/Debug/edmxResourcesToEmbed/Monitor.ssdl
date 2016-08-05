@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Хранилище MonitorModel" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Flats">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="bigint" Nullable="false" />
+    <Property Name="Latitude" Type="real" />
+    <Property Name="Longitude" Type="real" />
+    <Property Name="Country" Type="varchar(max)" />
+    <Property Name="City" Type="varchar(max)" />
+    <Property Name="Description" Type="varchar(max)" />
+    <Property Name="Rating" Type="real" />
+  </EntityType>
+  <EntityType Name="FlatStatuses">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Date" Type="datetime" />
+    <Property Name="Price" Type="smallint" />
+    <Property Name="Available" Type="bit" />
+    <Property Name="FlatId" Type="bigint" />
+  </EntityType>
+  <Association Name="FK_FlatStatuses_Flats">
+    <End Role="Flats" Type="Self.Flats" Multiplicity="0..1" />
+    <End Role="FlatStatuses" Type="Self.FlatStatuses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Flats">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="FlatStatuses">
+        <PropertyRef Name="FlatId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="Хранилище MonitorModelContainer">
+    <EntitySet Name="Flats" EntityType="Self.Flats" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="FlatStatuses" EntityType="Self.FlatStatuses" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_FlatStatuses_Flats" Association="Self.FK_FlatStatuses_Flats">
+      <End Role="Flats" EntitySet="Flats" />
+      <End Role="FlatStatuses" EntitySet="FlatStatuses" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

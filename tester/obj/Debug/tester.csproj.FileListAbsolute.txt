@@ -1,0 +1,16 @@
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\tester.exe.config
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\tester.exe
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\tester.pdb
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\DataMiner.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\CsQuery.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\DataMiner.pdb
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\CsQuery.xml
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\obj\Debug\tester.csprojResolveAssemblyReference.cache
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\obj\Debug\tester.exe
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\obj\Debug\tester.pdb
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\EntityFramework.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\EntityFramework.xml
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\ru\EntityFramework.resources.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\slon\Documents\Visual Studio 2015\Projects\airbnbmonitor\tester\bin\Debug\ru\EntityFramework.SqlServer.resources.dll

@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace DataMiner
+{
+    static class Loader
+    {
+        public static string Load(string url)
+        {
+            string html = null;
+
+            bool done = false;
+            while(!done)
+            {
+                
+                try
+                {
+                    using (var client = new WebClient())
+                    {
+                        client.Encoding = Encoding.UTF8;
+                        client.Headers.Add("User-Agent: Other");
+                        html = client.DownloadString(url);
+                    }
+
+                    done = true;
+                }
+                catch (WebException e)
+                {
+                    Console.WriteLine(e);
+                    Console.WriteLine(url);
+                    Thread.Sleep(60000*20);
+                }
+            }
+
+            return html;
+        }
+    }
+}
