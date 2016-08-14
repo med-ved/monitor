@@ -74,6 +74,7 @@
     </Compile>
     <Compile Include="Helpers.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Monitor.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

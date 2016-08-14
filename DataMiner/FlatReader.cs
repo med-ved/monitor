@@ -32,7 +32,7 @@ namespace DataMiner
         public FlatStatus CheckFlatStatus(FlatStatusRequest request)
         {
             //Task.Run(() => MethodWithParameter(param));
-            Console.WriteLine("Reading: " + request);
+            Logger.Log("Reading: " + request);
             /*Task<FlatStatus> task = Task<FlatStatus>.Factory.StartNew(() => this.FlatStatusThread(request));
             task.Wait();
             FlatStatus result = task.Result;*/
@@ -59,7 +59,6 @@ namespace DataMiner
             var apiSettings = dom["#_bootstrap-layout-init"].Attr("content");
             var serializer = new JavaScriptSerializer();
             dynamic apiSettingsObj = serializer.Deserialize<object>(apiSettings);
-            //string key = apiSettingsObj["api_config"]["key"];
             string key = Helpers.GetIfExists(apiSettingsObj, new string[] { "api_config", "key" });
 
             result.Available = GetFlatAvailability(request, dom, key);

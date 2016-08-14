@@ -38,8 +38,8 @@ namespace DataMiner
 
         public void CheckCityStatus(CityRequest r)
         {
-            Console.WriteLine("Reading city: " + r);
-            Console.WriteLine("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
+            Logger.Log("Reading city: " + r);
+            Logger.Log("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
                 QadrantNumber++, r.StartLatitude, r.StartLongitude, r.EndLatitude, r.EndLongitude);
             string url = String.Format("https://www.airbnb.ru/s/{0}--{1}?zoom=10&sw_lat={2}&sw_lng={3}&ne_lat={4}&ne_lng={5}", 
                 r.Name, r.Country, r.StartLatitude.ToGBString(), r.StartLongitude.ToGBString(), r.EndLatitude.ToGBString(), r.EndLongitude.ToGBString()); //Saint-Petersburg--Russia
@@ -84,10 +84,9 @@ namespace DataMiner
 
             Thread.Sleep(2000);
             var result = ReadFlats(request, min, max);
-            //var totalCount = result["visible_results_count"];
             var totalCount = Helpers.GetIfExists(result, "visible_results_count");
 
-            Console.WriteLine(String.Format("min: {0}, max: {1}, total_apartments: {2} ", min, max, totalCount));
+            Logger.Log(String.Format("min: {0}, max: {1}, total_apartments: {2} ", min, max, totalCount));
             if (totalCount >= MaxFlats)
             {
                 int half = (max - min) / 2;
@@ -150,7 +149,6 @@ namespace DataMiner
 
         private void ProcessPage(CityRequest request, dynamic data)
         {
-            //var flatsIds = data["property_ids"];
             var flatsIds = Helpers.GetIfExists(data, "property_ids");
             if (flatsIds == null)
             {
@@ -169,7 +167,7 @@ namespace DataMiner
                     Country = request.Country,
                     City = request.Name
                 };
-                Console.WriteLine("Reading flat: " + FlatNumber++ + " FlatType: " + request.FlatType + " Time: " + DateTime.Now);
+                Logger.Log("Reading flat: " + FlatNumber++ + " FlatType: " + request.FlatType + " Time: " + DateTime.Now);
 
                 if (!Database.IsFlatProcessed(flatRequest.Id, flatRequest.Date))
                 {
@@ -179,7 +177,7 @@ namespace DataMiner
                 }
                 else
                 {
-                    Console.WriteLine("Flat already processed. Duplicate checks count: " + DuplicateChecks++);
+                    Logger.Log("Flat already processed. Duplicate checks count: " + DuplicateChecks++);
                 }
             }
         }

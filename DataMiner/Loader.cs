@@ -31,8 +31,7 @@ namespace DataMiner
                 }
                 catch (WebException e)
                 {
-                    Console.WriteLine(e);
-                    Console.WriteLine(url);
+                    Logger.LogError(e, url);
                     Thread.Sleep(60000*20);
                 }
             }
