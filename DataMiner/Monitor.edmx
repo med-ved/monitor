@@ -5,6 +5,57 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Хранилище MonitorModel" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Description">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Access" Type="varchar(max)" />
+          <Property Name="Description" Type="varchar(max)" />
+          <Property Name="HouseRules" Type="varchar(max)" />
+          <Property Name="Interaction" Type="varchar(max)" />
+          <Property Name="Locale" Type="varchar(max)" />
+          <Property Name="Name" Type="varchar(max)" />
+          <Property Name="NeighborhoodOverview" Type="varchar(max)" />
+          <Property Name="Notes" Type="varchar(max)" />
+          <Property Name="Space" Type="varchar(max)" />
+          <Property Name="Summary" Type="varchar(max)" />
+          <Property Name="Transit" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="Facilities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Kitchen" Type="bit" />
+          <Property Name="Internet" Type="bit" />
+          <Property Name="TV" Type="bit" />
+          <Property Name="ToiletAccessories" Type="bit" />
+          <Property Name="Heating" Type="bit" />
+          <Property Name="AirConditioner" Type="bit" />
+          <Property Name="WashingMashine" Type="bit" />
+          <Property Name="Dryer" Type="bit" />
+          <Property Name="FreeParking" Type="bit" />
+          <Property Name="WirelessInternet" Type="bit" />
+          <Property Name="CableTv" Type="bit" />
+          <Property Name="Breakfast" Type="bit" />
+          <Property Name="PetsAllowed" Type="bit" />
+          <Property Name="FamilyFriendly" Type="bit" />
+          <Property Name="EventsFriendly" Type="bit" />
+          <Property Name="SmokingAllowed" Type="bit" />
+          <Property Name="PeopleWithLimitedAbilities" Type="bit" />
+          <Property Name="Fireplace" Type="bit" />
+          <Property Name="Intercom" Type="bit" />
+          <Property Name="Porter" Type="bit" />
+          <Property Name="SwimingPoll" Type="bit" />
+          <Property Name="Jacuzzi" Type="bit" />
+          <Property Name="Gym" Type="bit" />
+          <Property Name="Shoulder" Type="bit" />
+          <Property Name="Iron" Type="bit" />
+          <Property Name="Hairdryer" Type="bit" />
+          <Property Name="NotebookWorkingPlace" Type="bit" />
+          <Property Name="Lift" Type="bit" />
+        </EntityType>
         <EntityType Name="Flats">
           <Key>
             <PropertyRef Name="Id" />
@@ -14,19 +65,55 @@
           <Property Name="Longitude" Type="real" />
           <Property Name="Country" Type="varchar(max)" />
           <Property Name="City" Type="varchar(max)" />
-          <Property Name="Description" Type="varchar(max)" />
           <Property Name="Rating" Type="real" />
+          <Property Name="MaxGuests" Type="int" />
+          <Property Name="BedsCount" Type="int" />
+          <Property Name="BathroomsCount" Type="int" />
+          <Property Name="BedroomsCount" Type="int" />
+          <Property Name="RoomType" Type="varchar(max)" />
+          <Property Name="DescriptionId" Type="int" />
+          <Property Name="FacilitiesId" Type="int" />
+          <Property Name="MatchDescription" Type="real" />
+          <Property Name="Communication" Type="real" />
+          <Property Name="Cleanly" Type="real" />
+          <Property Name="Location" Type="real" />
+          <Property Name="Settlement" Type="real" />
+          <Property Name="PriceQualityRation" Type="real" />
         </EntityType>
         <EntityType Name="FlatStatuses">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Date" Type="datetime" />
+          <Property Name="Date" Type="datetime2" Precision="7" />
           <Property Name="Price" Type="smallint" />
           <Property Name="Available" Type="bit" />
           <Property Name="FlatId" Type="bigint" />
         </EntityType>
+        <Association Name="FK_Flats_Description">
+          <End Role="Description" Type="Self.Description" Multiplicity="0..1" />
+          <End Role="Flats" Type="Self.Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Description">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="DescriptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Flats_Facilities">
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="0..1" />
+          <End Role="Flats" Type="Self.Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="FacilitiesId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_FlatStatuses_Flats">
           <End Role="Flats" Type="Self.Flats" Multiplicity="0..1" />
           <End Role="FlatStatuses" Type="Self.FlatStatuses" Multiplicity="*" />
@@ -40,8 +127,18 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="Хранилище MonitorModelContainer">
+          <EntitySet Name="Description" EntityType="Self.Description" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Facilities" EntityType="Self.Facilities" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Flats" EntityType="Self.Flats" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FlatStatuses" EntityType="Self.FlatStatuses" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Flats_Description" Association="Self.FK_Flats_Description">
+            <End Role="Description" EntitySet="Description" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flats_Facilities" Association="Self.FK_Flats_Facilities">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
           <AssociationSet Name="FK_FlatStatuses_Flats" Association="Self.FK_FlatStatuses_Flats">
             <End Role="Flats" EntitySet="Flats" />
             <End Role="FlatStatuses" EntitySet="FlatStatuses" />
@@ -52,13 +149,76 @@
     <edmx:ConceptualModels>
       <Schema Namespace="MonitorModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="MonitorEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Description" EntityType="MonitorModel.Description" />
+          <EntitySet Name="Facilities" EntityType="MonitorModel.Facilities" />
           <EntitySet Name="Flats" EntityType="MonitorModel.Flats" />
           <EntitySet Name="FlatStatuses" EntityType="MonitorModel.FlatStatuses" />
+          <AssociationSet Name="FK_Flats_Description" Association="MonitorModel.FK_Flats_Description">
+            <End Role="Description" EntitySet="Description" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flats_Facilities" Association="MonitorModel.FK_Flats_Facilities">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
           <AssociationSet Name="FK_FlatStatuses_Flats" Association="MonitorModel.FK_FlatStatuses_Flats">
             <End Role="Flats" EntitySet="Flats" />
             <End Role="FlatStatuses" EntitySet="FlatStatuses" />
           </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Description">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Access" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Description1" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HouseRules" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Interaction" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Locale" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="NeighborhoodOverview" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Space" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Summary" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Transit" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_Flats_Description" FromRole="Description" ToRole="Flats" />
+        </EntityType>
+        <EntityType Name="Facilities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Kitchen" Type="Boolean" />
+          <Property Name="Internet" Type="Boolean" />
+          <Property Name="TV" Type="Boolean" />
+          <Property Name="ToiletAccessories" Type="Boolean" />
+          <Property Name="Heating" Type="Boolean" />
+          <Property Name="AirConditioner" Type="Boolean" />
+          <Property Name="WashingMashine" Type="Boolean" />
+          <Property Name="Dryer" Type="Boolean" />
+          <Property Name="FreeParking" Type="Boolean" />
+          <Property Name="WirelessInternet" Type="Boolean" />
+          <Property Name="CableTv" Type="Boolean" />
+          <Property Name="Breakfast" Type="Boolean" />
+          <Property Name="PetsAllowed" Type="Boolean" />
+          <Property Name="FamilyFriendly" Type="Boolean" />
+          <Property Name="EventsFriendly" Type="Boolean" />
+          <Property Name="SmokingAllowed" Type="Boolean" />
+          <Property Name="PeopleWithLimitedAbilities" Type="Boolean" />
+          <Property Name="Fireplace" Type="Boolean" />
+          <Property Name="Intercom" Type="Boolean" />
+          <Property Name="Porter" Type="Boolean" />
+          <Property Name="SwimingPoll" Type="Boolean" />
+          <Property Name="Jacuzzi" Type="Boolean" />
+          <Property Name="Gym" Type="Boolean" />
+          <Property Name="Shoulder" Type="Boolean" />
+          <Property Name="Iron" Type="Boolean" />
+          <Property Name="Hairdryer" Type="Boolean" />
+          <Property Name="NotebookWorkingPlace" Type="Boolean" />
+          <Property Name="Lift" Type="Boolean" />
+          <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_Flats_Facilities" FromRole="Facilities" ToRole="Flats" />
+        </EntityType>
         <EntityType Name="Flats">
           <Key>
             <PropertyRef Name="Id" />
@@ -68,8 +228,22 @@
           <Property Name="Longitude" Type="Single" />
           <Property Name="Country" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Rating" Type="Single" />
+          <Property Name="MaxGuests" Type="Int32" />
+          <Property Name="BedsCount" Type="Int32" />
+          <Property Name="BathroomsCount" Type="Int32" />
+          <Property Name="BedroomsCount" Type="Int32" />
+          <Property Name="RoomType" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DescriptionId" Type="Int32" />
+          <Property Name="FacilitiesId" Type="Int32" />
+          <Property Name="MatchDescription" Type="Single" />
+          <Property Name="Communication" Type="Single" />
+          <Property Name="Cleanly" Type="Single" />
+          <Property Name="Location" Type="Single" />
+          <Property Name="Settlement" Type="Single" />
+          <Property Name="PriceQualityRation" Type="Single" />
+          <NavigationProperty Name="Description" Relationship="MonitorModel.FK_Flats_Description" FromRole="Flats" ToRole="Description" />
+          <NavigationProperty Name="Facilities" Relationship="MonitorModel.FK_Flats_Facilities" FromRole="Flats" ToRole="Facilities" />
           <NavigationProperty Name="FlatStatuses" Relationship="MonitorModel.FK_FlatStatuses_Flats" FromRole="Flats" ToRole="FlatStatuses" />
         </EntityType>
         <EntityType Name="FlatStatuses">
@@ -77,12 +251,36 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Date" Type="DateTime" Precision="7" />
           <Property Name="Price" Type="Int16" />
           <Property Name="Available" Type="Boolean" />
           <Property Name="FlatId" Type="Int64" />
           <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_FlatStatuses_Flats" FromRole="FlatStatuses" ToRole="Flats" />
         </EntityType>
+        <Association Name="FK_Flats_Description">
+          <End Type="MonitorModel.Description" Role="Description" Multiplicity="0..1" />
+          <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Description">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="DescriptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Flats_Facilities">
+          <End Type="MonitorModel.Facilities" Role="Facilities" Multiplicity="0..1" />
+          <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="FacilitiesId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_FlatStatuses_Flats">
           <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="0..1" />
           <End Type="MonitorModel.FlatStatuses" Role="FlatStatuses" Multiplicity="*" />
@@ -101,11 +299,76 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="Хранилище MonitorModelContainer" CdmEntityContainer="MonitorEntities">
+          <EntitySetMapping Name="Description">
+            <EntityTypeMapping TypeName="MonitorModel.Description">
+              <MappingFragment StoreEntitySet="Description">
+                <ScalarProperty Name="Transit" ColumnName="Transit" />
+                <ScalarProperty Name="Summary" ColumnName="Summary" />
+                <ScalarProperty Name="Space" ColumnName="Space" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="NeighborhoodOverview" ColumnName="NeighborhoodOverview" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Locale" ColumnName="Locale" />
+                <ScalarProperty Name="Interaction" ColumnName="Interaction" />
+                <ScalarProperty Name="HouseRules" ColumnName="HouseRules" />
+                <ScalarProperty Name="Description1" ColumnName="Description" />
+                <ScalarProperty Name="Access" ColumnName="Access" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Facilities">
+            <EntityTypeMapping TypeName="MonitorModel.Facilities">
+              <MappingFragment StoreEntitySet="Facilities">
+                <ScalarProperty Name="Lift" ColumnName="Lift" />
+                <ScalarProperty Name="NotebookWorkingPlace" ColumnName="NotebookWorkingPlace" />
+                <ScalarProperty Name="Hairdryer" ColumnName="Hairdryer" />
+                <ScalarProperty Name="Iron" ColumnName="Iron" />
+                <ScalarProperty Name="Shoulder" ColumnName="Shoulder" />
+                <ScalarProperty Name="Gym" ColumnName="Gym" />
+                <ScalarProperty Name="Jacuzzi" ColumnName="Jacuzzi" />
+                <ScalarProperty Name="SwimingPoll" ColumnName="SwimingPoll" />
+                <ScalarProperty Name="Porter" ColumnName="Porter" />
+                <ScalarProperty Name="Intercom" ColumnName="Intercom" />
+                <ScalarProperty Name="Fireplace" ColumnName="Fireplace" />
+                <ScalarProperty Name="PeopleWithLimitedAbilities" ColumnName="PeopleWithLimitedAbilities" />
+                <ScalarProperty Name="SmokingAllowed" ColumnName="SmokingAllowed" />
+                <ScalarProperty Name="EventsFriendly" ColumnName="EventsFriendly" />
+                <ScalarProperty Name="FamilyFriendly" ColumnName="FamilyFriendly" />
+                <ScalarProperty Name="PetsAllowed" ColumnName="PetsAllowed" />
+                <ScalarProperty Name="Breakfast" ColumnName="Breakfast" />
+                <ScalarProperty Name="CableTv" ColumnName="CableTv" />
+                <ScalarProperty Name="WirelessInternet" ColumnName="WirelessInternet" />
+                <ScalarProperty Name="FreeParking" ColumnName="FreeParking" />
+                <ScalarProperty Name="Dryer" ColumnName="Dryer" />
+                <ScalarProperty Name="WashingMashine" ColumnName="WashingMashine" />
+                <ScalarProperty Name="AirConditioner" ColumnName="AirConditioner" />
+                <ScalarProperty Name="Heating" ColumnName="Heating" />
+                <ScalarProperty Name="ToiletAccessories" ColumnName="ToiletAccessories" />
+                <ScalarProperty Name="TV" ColumnName="TV" />
+                <ScalarProperty Name="Internet" ColumnName="Internet" />
+                <ScalarProperty Name="Kitchen" ColumnName="Kitchen" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Flats">
             <EntityTypeMapping TypeName="MonitorModel.Flats">
               <MappingFragment StoreEntitySet="Flats">
+                <ScalarProperty Name="PriceQualityRation" ColumnName="PriceQualityRation" />
+                <ScalarProperty Name="Settlement" ColumnName="Settlement" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="Cleanly" ColumnName="Cleanly" />
+                <ScalarProperty Name="Communication" ColumnName="Communication" />
+                <ScalarProperty Name="MatchDescription" ColumnName="MatchDescription" />
+                <ScalarProperty Name="FacilitiesId" ColumnName="FacilitiesId" />
+                <ScalarProperty Name="DescriptionId" ColumnName="DescriptionId" />
+                <ScalarProperty Name="RoomType" ColumnName="RoomType" />
+                <ScalarProperty Name="BedroomsCount" ColumnName="BedroomsCount" />
+                <ScalarProperty Name="BathroomsCount" ColumnName="BathroomsCount" />
+                <ScalarProperty Name="BedsCount" ColumnName="BedsCount" />
+                <ScalarProperty Name="MaxGuests" ColumnName="MaxGuests" />
                 <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="Country" ColumnName="Country" />
                 <ScalarProperty Name="Longitude" ColumnName="Longitude" />

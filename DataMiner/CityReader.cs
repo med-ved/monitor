@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -16,6 +17,11 @@ namespace DataMiner
         public DateTime Date { get; set; }
         public string FlatType { get; set; }
 
+        public double StartLongitude { get; set; }
+        public double EndLongitude { get; set; }
+        public double StartLatitude { get; set; }
+        public double EndLatitude { get; set; }
+
         public override string ToString()
         {
             return String.Format("Date={0}, Country={1}, City={2}, FlatType={3}", Date, Country, Name, FlatType);
@@ -25,25 +31,47 @@ namespace DataMiner
     public class CityReader
     {
         private int FlatNumber = 0;
+        private int QadrantNumber = 0;
         private int DuplicateChecks = 0;
         private static int MaxFlats = 300;
         private static string[] FlatTypes = new string[] { "Entire+home%2Fapt", "Private+room", "Shared+room" };
 
-        public void CheckCityStatus(CityRequest request)
+        public void CheckCityStatus(CityRequest r)
         {
-            Console.WriteLine("Reading city: " + request);
-            string url = String.Format("https://www.airbnb.ru/s/{0}--{1}", request.Name, request.Country); //Saint-Petersburg--Russia
+            Console.WriteLine("Reading city: " + r);
+            Console.WriteLine("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
+                QadrantNumber++, r.StartLatitude, r.StartLongitude, r.EndLatitude, r.EndLongitude);
+            string url = String.Format("https://www.airbnb.ru/s/{0}--{1}?zoom=10&sw_lat={2}&sw_lng={3}&ne_lat={4}&ne_lng={5}", 
+                r.Name, r.Country, r.StartLatitude.ToGBString(), r.StartLongitude.ToGBString(), r.EndLatitude.ToGBString(), r.EndLongitude.ToGBString()); //Saint-Petersburg--Russia
             var html = Loader.Load(url);
 
             CQ dom = html;
             var minPrice = dom[".price-range-slider"].Attr("data-min-price-daily");
             var maxPrice = dom[".price-range-slider"].Attr("data-max-price-daily");
 
-            for(int i = 0; i < FlatTypes.Length; i++)
+            int latDiv = 2;
+            int longDiv = 2;
+
+            double latPart = (r.EndLatitude - r.StartLatitude) / (double)latDiv;
+            double longPart = (r.EndLongitude - r.StartLongitude) / (double)longDiv;
+            for(int i = 0; i < latDiv; i++)
             {
-                request.FlatType = FlatTypes[i];
-                Console.WriteLine("REading flat type: " + request.FlatType);
-                CheckFlats(request, Convert.ToInt32(minPrice), Convert.ToInt32(maxPrice));
+                for (int j = 0; j < longDiv; j++)
+                {
+
+                    var request = new CityRequest()
+                    {
+                        Name = r.Name,
+                        Country = r.Country,
+                        Date = r.Date,
+                        StartLatitude = r.StartLatitude + latPart * (double)i,
+                        EndLatitude = r.StartLatitude + latPart * (double)(i+1),
+                        StartLongitude = r.StartLongitude + longPart * (double)j,
+                        EndLongitude = r.StartLongitude + longPart * (double)(j+1),
+                    };
+
+                    CheckFlats(request, Convert.ToInt32(minPrice), Convert.ToInt32(maxPrice));
+                }
             }
         }
 
@@ -54,8 +82,10 @@ namespace DataMiner
                 return;
             }
 
+            Thread.Sleep(2000);
             var result = ReadFlats(request, min, max);
-            var totalCount = result["visible_results_count"];
+            //var totalCount = result["visible_results_count"];
+            var totalCount = Helpers.GetIfExists(result, "visible_results_count");
 
             Console.WriteLine(String.Format("min: {0}, max: {1}, total_apartments: {2} ", min, max, totalCount));
             if (totalCount >= MaxFlats)
@@ -70,10 +100,11 @@ namespace DataMiner
             }
         }
 
-        private dynamic ReadFlats(CityRequest request, int min, int max, int? page = null)
+        private dynamic ReadFlats(CityRequest r, int min, int max, int? page = null)
         {
-            string url = String.Format("https://www.airbnb.ru/search/search_results?source=filters&location={0}%2C%20{1}&price_min={2}&price_max={3}&room_types%5B%5D={4}",
-                request.Name, request.Country, min, max, request.FlatType); //Saint-Petersburg--Russia
+            string url = String.Format("https://www.airbnb.ru/search/search_results?zoom=10&sw_lat={0}&sw_lng={1}&ne_lat={2}&ne_lng={3}&price_min={4}&price_max={5}&search_by_map=true&location={6}%2C+{7}",
+                r.StartLatitude.ToGBString(), r.StartLongitude.ToGBString(), r.EndLatitude.ToGBString(), r.EndLongitude.ToGBString(), 
+                min, max, r.Name, r.Country); //Saint-Petersburg--Russia
 
             if (page != null)
             {
@@ -88,10 +119,11 @@ namespace DataMiner
 
         private void ProcessFlats(CityRequest request, int min, int max, dynamic data)
         {
-            dynamic metadata = data["results_json"]["metadata"];
-
-            int total = Convert.ToInt32(metadata["listings_count"]);
-            int flatsPerPage = Convert.ToInt32(metadata["pagination"]["result_count"]);
+            //dynamic metadata = data["results_json"]["metadata"];
+            var metadata = Helpers.GetIfExists(data, new string[] { "results_json", "metadata" });
+            int total = Convert.ToInt32(Helpers.GetIfExists(metadata, "listings_count"));
+            int flatsPerPage = Convert.ToInt32(Helpers.GetIfExists(metadata, new string[] { "pagination", "result_count" }));
+                
             if (flatsPerPage == 0)
             {
                 return;
@@ -118,7 +150,13 @@ namespace DataMiner
 
         private void ProcessPage(CityRequest request, dynamic data)
         {
-            var flatsIds = data["property_ids"];
+            //var flatsIds = data["property_ids"];
+            var flatsIds = Helpers.GetIfExists(data, "property_ids");
+            if (flatsIds == null)
+            {
+                return;
+            }
+
             var tasks = new Task<FlatStatus>[flatsIds.Length];
             for (var i = 0; i < flatsIds.Length; i++)
             {
@@ -137,25 +175,21 @@ namespace DataMiner
                 {
                     var status = flatReader.CheckFlatStatus(flatRequest);
                     Database.Save(status);
-                    Thread.Sleep(10000);
+                    Thread.Sleep(7500);
                 }
                 else
                 {
                     Console.WriteLine("Flat already processed. Duplicate checks count: " + DuplicateChecks++);
                 }
             }
-            
-            //task.Wait();
-            //FlatStatus result = task.Result;
-            //Console.WriteLine("Starting thred for request: " + i);
-            //tasks[i] = Task<FlatStatus>.Factory.StartNew(() => flatReader.CheckFlatStatus(flatRequest));
-            /*var results = new FlatStatus[flatsIds.Length];
-            for (var i = 0; i < flatsIds.Length; i++)
-            {
-                tasks[i].Wait();
-                results[i] = tasks[i].Result;
-            }*/
+        }
+    }
 
+    public static class DoubleExtensions
+    {
+        public static string ToGBString(this double value)
+        {
+            return value.ToString(CultureInfo.GetCultureInfo("en-GB"));
         }
     }
 }

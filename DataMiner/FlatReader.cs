@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -58,7 +59,8 @@ namespace DataMiner
             var apiSettings = dom["#_bootstrap-layout-init"].Attr("content");
             var serializer = new JavaScriptSerializer();
             dynamic apiSettingsObj = serializer.Deserialize<object>(apiSettings);
-            string key = apiSettingsObj["api_config"]["key"];
+            //string key = apiSettingsObj["api_config"]["key"];
+            string key = Helpers.GetIfExists(apiSettingsObj, new string[] { "api_config", "key" });
 
             result.Available = GetFlatAvailability(request, dom, key);
             return result;
@@ -66,6 +68,11 @@ namespace DataMiner
 
         private bool? GetFlatAvailability(FlatStatusRequest request, CQ dom, string key)
         {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return null;
+            }
+
             string url = String.Format("https://www.airbnb.ru/api/v2/calendar_months?currency=RUB&locale=ru&listing_id={0}&month={1}&year={2}&count=3&_format=with_conditions&key={3}",
                 request.Id, request.Date.Month, request.Date.Year, key);
 
@@ -77,17 +84,41 @@ namespace DataMiner
 
             var serializer = new JavaScriptSerializer();
             dynamic availbility = serializer.Deserialize<object>(json);
-            var monthes = availbility["calendar_months"];
+            var monthes = Helpers.GetIfExists(availbility, "calendar_months");
+            if (monthes == null)
+            {
+                return null;
+            }
+
             foreach (var month in monthes)
             {
-                if (month["month"] == request.Date.Month)
+                var monthNumber = Helpers.GetIfExists(month, "month");
+                if (monthNumber == null)
                 {
-                    foreach (var day in month["days"])
+                    continue;
+                }
+
+                if (monthNumber == request.Date.Month)
+                {
+                    var days = Helpers.GetIfExists(month, "days");
+                    if (days == null)
                     {
-                        DateTime date = DateTime.Parse(day["date"]);
+                        continue;
+                    }
+
+                    foreach (var day in days)
+                    {
+                        
+                        var dateStr = Helpers.GetIfExists(day, "date");
+                        if (dateStr == null)
+                        {
+                            continue;
+                        }
+
+                        DateTime date = DateTime.Parse(dateStr);
                         if (date.Date == request.Date.Date)
                         {
-                            return day["available"];
+                            return Helpers.GetIfExists(day, "available");
                         }
                     }
                 }
@@ -110,10 +141,6 @@ namespace DataMiner
             result.Flat.Longitude = GetDouble(dom, "meta[property*=longitude]", "content");
             result.Flat.Country = request.Country;
             result.Flat.City = request.City;
-
-            string descriptionBrief = dom["span:contains('Об этом жилье')"].Parent().Next().Text();
-            string descriptionFull = GetString(dom, "#description");
-            result.Flat.Description = descriptionBrief + "  \n  " + descriptionFull;
             result.Flat.Rating = GetDouble(dom, "#display-address .star-rating", "content");
 
             result.Flat.MaxGuests = GetInt(dom,"strong[data-reactid*='$Вмещает гостей=2.2']");
@@ -128,11 +155,43 @@ namespace DataMiner
             result.Flat.RoomType = GetString(dom, "strong[data-reactid*='$Тип размещения=2.0.2']");
 
             var json = dom["#_bootstrap-listing"].Attr("content");
+            if (json == null)
+            {
+                return result;
+            }
+
             var serializer = new JavaScriptSerializer();
             dynamic settings = serializer.Deserialize<object>(json);
 
             result.Flat.ShortDescription = GetShortDescription(dom, settings);
             result.Flat.Facilities = GetFacilities(dom, settings);
+            result.Flat.Description = GetFullDescription(settings);
+            return result;
+        }
+
+        private FlatDescription GetFullDescription(dynamic settings)
+        {
+            var result = new FlatDescription();
+            var listing = Helpers.GetIfExists(settings, "listing");
+            var description = Helpers.GetIfExists(listing, "localized_sectioned_description");
+            if (description == null)
+            {
+                result.HouseRules = Helpers.GetIfExists(listing, "localized_additional_house_rules");
+                result.Description = Helpers.GetIfExists(listing, "localized_description");
+                return result;
+            }
+
+            result.Access = Helpers.GetIfExists(description, "access");
+            result.Description = Helpers.GetIfExists(description, "description");
+            result.HouseRules = Helpers.GetIfExists(description, "house_rules");
+            result.Interaction = Helpers.GetIfExists(description, "interaction");
+            result.Locale = Helpers.GetIfExists(description, "locale");
+            result.Name = Helpers.GetIfExists(description, "name");
+            result.NeighborhoodOverview = Helpers.GetIfExists(description, "neighborhood_overview");
+            result.Notes = Helpers.GetIfExists(description, "notes");
+            result.Space = Helpers.GetIfExists(description, "space");
+            result.Summary = Helpers.GetIfExists(description, "summary");
+            result.Transit = Helpers.GetIfExists(description, "transit");
 
             return result;
         }
@@ -148,14 +207,13 @@ namespace DataMiner
             json = json.Substring(4, json.Length - 7);
             var serializer = new JavaScriptSerializer();
             dynamic settings = serializer.Deserialize<object>(json);
-
-            return settings["pricing_quote"]["rate"]["amount"];
+            return Helpers.GetIfExists(settings, new[] { "pricing_quote", "rate", "amount" });
         }
 
         private FlatFacilities GetFacilities(CQ dom, dynamic settings)
         {
             var result = new FlatFacilities();
-            var items = settings["listing"]["listing_amenities"];
+            var items = Helpers.GetIfExists(settings, new[] { "listing", "listing_amenities" });
 
             result.Kitchen = GetFacilitieesItem(items, "kitchen");
             result.Internet = GetFacilitieesItem(items, "internet");
@@ -191,6 +249,11 @@ namespace DataMiner
 
         private bool? GetFacilitieesItem(dynamic items, string name)
         {
+            if (items == null)
+            {
+                return null;
+            }
+
             foreach (var item in items)
             {
                 if (item["tag"] == name)
@@ -205,7 +268,7 @@ namespace DataMiner
         private FlatShortDescription GetShortDescription(CQ dom, dynamic settings)
         {
             var result = new FlatShortDescription();
-            var items = settings["listing"]["review_details_interface"]["review_summary"];
+            var items = Helpers.GetIfExists(settings, new[] { "listing", "review_details_interface", "review_summary" });
 
             result.Cleanly = GetShortDescriptionItem(items, "Чистота");
             result.Communication = GetShortDescriptionItem(items, "Общение");
@@ -219,6 +282,11 @@ namespace DataMiner
 
         private double? GetShortDescriptionItem(dynamic items, string name)
         {
+            if (items == null)
+            {
+                return null;
+            }
+
             foreach(var item in items)
             {
                 if (item["label"] == name)

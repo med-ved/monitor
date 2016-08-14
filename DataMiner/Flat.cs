@@ -13,7 +13,6 @@ namespace DataMiner
         public double? Longitude { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
-        public string Description { get; set; }
         public double? Rating { get; set; }
 
         public int? MaxGuests { get; set; }
@@ -22,6 +21,7 @@ namespace DataMiner
         public int? BedroomsCount { get; set; }
         public string RoomType { get; set; }
 
+        public FlatDescription Description { get; set; }
         public FlatShortDescription ShortDescription { get; set; }
         public FlatFacilities Facilities { get; set; }
     }
@@ -66,6 +66,21 @@ namespace DataMiner
         public double? Location { get; set; }
         public double? Settlement { get; set; }
         public double? PriceQualityRation { get; set; }
+    }
+
+    public class FlatDescription
+    {
+        public string Access { get; set; }
+        public string Description { get; set; }
+        public string HouseRules { get; set; }
+        public string Interaction { get; set; }
+        public string Locale { get; set; }
+        public string Name { get; set; }
+        public string NeighborhoodOverview { get; set; }
+        public string Notes { get; set; }
+        public string Space { get; set; }
+        public string Summary { get; set; }
+        public string Transit { get; set; }
     }
 
     public class FlatStatus

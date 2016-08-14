@@ -25,9 +25,23 @@ namespace DataMiner
         public Nullable<float> Longitude { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
-        public string Description { get; set; }
         public Nullable<float> Rating { get; set; }
+        public Nullable<int> MaxGuests { get; set; }
+        public Nullable<int> BedsCount { get; set; }
+        public Nullable<int> BathroomsCount { get; set; }
+        public Nullable<int> BedroomsCount { get; set; }
+        public string RoomType { get; set; }
+        public Nullable<int> DescriptionId { get; set; }
+        public Nullable<int> FacilitiesId { get; set; }
+        public Nullable<float> MatchDescription { get; set; }
+        public Nullable<float> Communication { get; set; }
+        public Nullable<float> Cleanly { get; set; }
+        public Nullable<float> Location { get; set; }
+        public Nullable<float> Settlement { get; set; }
+        public Nullable<float> PriceQualityRation { get; set; }
     
+        public virtual Description Description { get; set; }
+        public virtual Facilities Facilities { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FlatStatuses> FlatStatuses { get; set; }
     }

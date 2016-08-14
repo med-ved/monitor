@@ -25,6 +25,8 @@ namespace DataMiner
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<Description> Description { get; set; }
+        public virtual DbSet<Facilities> Facilities { get; set; }
         public virtual DbSet<Flats> Flats { get; set; }
         public virtual DbSet<FlatStatuses> FlatStatuses { get; set; }
     }
