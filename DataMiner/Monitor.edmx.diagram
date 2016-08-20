@@ -5,13 +5,14 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="26354c6c72544b0eb299ef69f705125d" Name="Diagram1">
-        <EntityTypeShape EntityType="MonitorModel.Description" Width="1.5" PointX="0.75" PointY="2" />
-        <EntityTypeShape EntityType="MonitorModel.Facilities" Width="1.5" PointX="5.125" PointY="1.125" />
-        <EntityTypeShape EntityType="MonitorModel.Flats" Width="1.5" PointX="3" PointY="1.125" />
-        <EntityTypeShape EntityType="MonitorModel.FlatStatuses" Width="1.5" PointX="0.875" PointY="6.125" />
+        <EntityTypeShape EntityType="MonitorModel.Description" Width="1.5" PointX="0.75" PointY="8.75" />
+        <EntityTypeShape EntityType="MonitorModel.Facilities" Width="1.5" PointX="0.75" PointY="1.125" />
+        <EntityTypeShape EntityType="MonitorModel.Flats" Width="1.5" PointX="3" PointY="1.875" />
+        <EntityTypeShape EntityType="MonitorModel.FlatStatuses" Width="1.5" PointX="5.25" PointY="3.5" />
         <AssociationConnector Association="MonitorModel.FK_Flats_Description" />
         <AssociationConnector Association="MonitorModel.FK_Flats_Facilities" />
         <AssociationConnector Association="MonitorModel.FK_FlatStatuses_Flats" />
+        <EntityTypeShape EntityType="MonitorModel.Settings" Width="1.5" PointX="5.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

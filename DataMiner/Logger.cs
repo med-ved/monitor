@@ -15,6 +15,7 @@ namespace DataMiner
         private static void WriteLine(string fileName, string msg)
         {
             Console.WriteLine(msg);
+            System.Diagnostics.Debug.WriteLine(msg);
             File.AppendAllText(fileName, "> " +DateTime.Now.ToString() + " > " + msg + Environment.NewLine);
         }
 

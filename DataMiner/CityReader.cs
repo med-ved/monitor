@@ -36,11 +36,30 @@ namespace DataMiner
         private static int MaxFlats = 300;
         private static string[] FlatTypes = new string[] { "Entire+home%2Fapt", "Private+room", "Shared+room" };
 
-        public void CheckCityStatus(CityRequest r)
+        private object locker = new object();
+        private bool _stop = false;
+        public bool Stop
+        {
+            get
+            {
+                lock (locker)
+                {
+                    return _stop;
+                }
+                
+            }
+            set
+            {
+                lock (locker)
+                {
+                    _stop = value;
+                }
+            }
+        }
+
+        public bool CheckCityStatus(CityRequest r)
         {
             Logger.Log("Reading city: " + r);
-            Logger.Log("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
-                QadrantNumber++, r.StartLatitude, r.StartLongitude, r.EndLatitude, r.EndLongitude);
             string url = String.Format("https://www.airbnb.ru/s/{0}--{1}?zoom=10&sw_lat={2}&sw_lng={3}&ne_lat={4}&ne_lng={5}", 
                 r.Name, r.Country, r.StartLatitude.ToGBString(), r.StartLongitude.ToGBString(), r.EndLatitude.ToGBString(), r.EndLongitude.ToGBString()); //Saint-Petersburg--Russia
             var html = Loader.Load(url);
@@ -70,9 +89,28 @@ namespace DataMiner
                         EndLongitude = r.StartLongitude + longPart * (double)(j+1),
                     };
 
-                    CheckFlats(request, Convert.ToInt32(minPrice), Convert.ToInt32(maxPrice));
+                    Logger.Log("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
+                            QadrantNumber++, request.StartLatitude, request.StartLongitude, request.EndLatitude, request.EndLongitude);
+
+                    try
+                    {
+                        if (Stop)
+                        {
+                            Logger.Log("Stopped CheckCityStatus");
+                            return false;
+                        }
+
+                        CheckFlats(request, Convert.ToInt32(minPrice), Convert.ToInt32(maxPrice));
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e);
+                    }
+                    
                 }
             }
+
+            return true;
         }
 
         private void CheckFlats(CityRequest request, int min, int max)
@@ -89,8 +127,20 @@ namespace DataMiner
             Logger.Log(String.Format("min: {0}, max: {1}, total_apartments: {2} ", min, max, totalCount));
             if (totalCount >= MaxFlats)
             {
+                if (Stop)
+                {
+                    Logger.Log("Stopped CheckFlats");
+                    return;
+                }
+
                 int half = (max - min) / 2;
                 CheckFlats(request, min, min + half);
+
+                if (Stop)
+                {
+                    Logger.Log("Stopped CheckFlats");
+                    return;
+                }
                 CheckFlats(request, min + half + 1, max);
             }
             else
@@ -118,7 +168,6 @@ namespace DataMiner
 
         private void ProcessFlats(CityRequest request, int min, int max, dynamic data)
         {
-            //dynamic metadata = data["results_json"]["metadata"];
             var metadata = Helpers.GetIfExists(data, new string[] { "results_json", "metadata" });
             int total = Convert.ToInt32(Helpers.GetIfExists(metadata, "listings_count"));
             int flatsPerPage = Convert.ToInt32(Helpers.GetIfExists(metadata, new string[] { "pagination", "result_count" }));
@@ -137,12 +186,23 @@ namespace DataMiner
             ProcessPage(request, data);
             for (int i = 2; i < pages + 1; i++)
             {
+                if (Stop)
+                {
+                    Logger.Log("Stopped ProcessFlats");
+                    return;
+                }
                 ProcessPage(request, min, max, i);
             }
         }
 
         private void ProcessPage(CityRequest request, int min, int max, int page)
         {
+            if (Stop)
+            {
+                Logger.Log("Stopped ProcessPage 1");
+                return;
+            }
+
             var data = ReadFlats(request, min, max, page);
             ProcessPage(request, data);
         }
@@ -158,6 +218,12 @@ namespace DataMiner
             var tasks = new Task<FlatStatus>[flatsIds.Length];
             for (var i = 0; i < flatsIds.Length; i++)
             {
+                if (Stop)
+                {
+                    Logger.Log("Stopped ProcessPage 2");
+                    return;
+                }
+
                 var flatReader = new FlatReader();
 
                 var flatRequest = new FlatStatusRequest()
@@ -171,7 +237,16 @@ namespace DataMiner
 
                 if (!Database.IsFlatProcessed(flatRequest.Id, flatRequest.Date))
                 {
-                    var status = flatReader.CheckFlatStatus(flatRequest);
+                    FlatStatus status = null;
+                    try
+                    {
+                        status = flatReader.CheckFlatStatus(flatRequest);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e);
+                    }
+
                     Database.Save(status);
                     Thread.Sleep(7500);
                 }

@@ -29,5 +29,6 @@ namespace DataMiner
         public virtual DbSet<Facilities> Facilities { get; set; }
         public virtual DbSet<Flats> Flats { get; set; }
         public virtual DbSet<FlatStatuses> FlatStatuses { get; set; }
+        public virtual DbSet<Settings> Settings { get; set; }
     }
 }

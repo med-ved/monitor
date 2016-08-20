@@ -3,3 +3,12 @@
 /DataMiner/bin
 /DataMiner/obj
 /tester/bin/Debug
+/airbnbmonitor/obj/Debug
+/packages/Antlr.3.4.1.9004/*.nupkg
+/tester/obj/Debug
+/packages/Owin.1.0/*.nupkg
+/packages/EntityFramework.6.1.3
+/packages/EntityFramework.ru.6.1.3
+/packages/Microsoft.ApplicationInsights.2.0.0
+/packages/CsQueryLaster.1.3.5.200
+/packages/Antlr.3.4.1.9004/lib

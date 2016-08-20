@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace DataMiner
 {
+    public class LatestDateInfo
+    {
+        public DateTime? Date { get; set; }
+        public bool? Finished { get; set; }
+    }
+
     public static class Database
     {
         public static void Save(FlatStatus status)
@@ -28,14 +34,6 @@ namespace DataMiner
                 };
                 context.FlatStatuses.Add(newStatus);
 
-                //Perform Update operation
-                /*Student studentToUpdate = studentList.Where(s => s.StudentName == "student1").FirstOrDefault<Student>();
-                studentToUpdate.StudentName = "Edited student1";
-
-                //Perform delete operation
-                context.Students.Remove(studentList.ElementAt<Student>(0));
-
-                //Execute Inser, Update & Delete queries in the database*/
                 context.SaveChanges();
             }
         }
@@ -140,6 +138,52 @@ namespace DataMiner
             }
 
             return null;
+        }
+
+        public static LatestDateInfo GetLatestProcessedDateInfo()
+        {
+            using (var context = new MonitorEntities())
+            {
+                var settings = context.Settings.FirstOrDefault();
+                if (settings == null)
+                {
+                    return null;
+                }
+
+                var info = new LatestDateInfo
+                {
+                    Date = settings.LatestDay,
+                    Finished = settings.Finished
+                };
+
+                return info;
+            }
+        }
+
+        public static void SetLatestProcessedDate(DateTime date, bool finished)
+        {
+            using (var context = new MonitorEntities())
+            {
+                var settings = context.Settings.FirstOrDefault();
+                if (settings == null)
+                {
+                    var newSettings = new Settings()
+                    {
+                        Id = 1,
+                        LatestDay = date,
+                        Finished = finished
+                    };
+
+                    context.Settings.Add(newSettings);
+                }
+                else
+                {
+                    settings.Finished = finished;
+                    settings.LatestDay = date;
+                }
+                
+                context.SaveChanges();
+            }
         }
     }
 }
