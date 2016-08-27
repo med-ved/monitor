@@ -65,8 +65,17 @@ namespace DataMiner
             var html = Loader.Load(url);
 
             CQ dom = html;
-            var minPrice = dom[".price-range-slider"].Attr("data-min-price-daily");
-            var maxPrice = dom[".price-range-slider"].Attr("data-max-price-daily");
+            //var minPrice = dom[".price-range-slider"].Attr("data-min-price-daily");
+            //var maxPrice = dom[".price-range-slider"].Attr("data-max-price-daily");
+
+
+
+            var json = dom["#site-content .map-search"].Attr("data-bootstrap-data");
+            var serializer = new JavaScriptSerializer();
+            dynamic settings = serializer.Deserialize<object>(json);
+            var prices = Helpers.GetIfExists(settings, new[] { "results_json", "metadata", "search" });
+            var minPrice = Helpers.GetIfExists(prices, "price_range_min_native");
+            var maxPrice = Helpers.GetIfExists(prices, "price_range_max_native");
 
             int latDiv = 2;
             int longDiv = 2;

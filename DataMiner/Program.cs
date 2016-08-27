@@ -87,6 +87,24 @@ namespace DataMiner
             return false;
         }
 
+        public void PingLoop()
+        {
+            while(true)
+            {
+                try
+                {
+                    Logger.Log("Pingin application");
+                    var url = @"http://localhost:52371/Ping";
+                    Loader.Load(url);
+                    Thread.Sleep(5000);
+                }
+                catch(Exception e)
+                {
+                    Logger.LogError(e);
+                }
+            }
+        }
+
         public void Stop(bool immediate)
         {
             reader.Stop = true;
@@ -95,6 +113,7 @@ namespace DataMiner
 
         public void Run()
         {
+            Task.Run(() => PingLoop());
             Task.Run(() => MainLoop());
         }
     }
