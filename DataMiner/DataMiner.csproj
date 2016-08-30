@@ -75,6 +75,9 @@
     </Compile>
     <Compile Include="Helpers.cs" />
     <Compile Include="Loader.cs" />
+    <Compile Include="Log.cs">
+      <DependentUpon>Monitor.tt</DependentUpon>
+    </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="Monitor.Context.cs">
       <AutoGen>True</AutoGen>

@@ -12,6 +12,7 @@ namespace airbnbmonitor.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
+            //DataMiner.Logger.Log("Pong");
             return View();
         }
     }

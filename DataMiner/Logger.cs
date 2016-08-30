@@ -7,16 +7,18 @@ using System.Threading.Tasks;
 
 namespace DataMiner
 {
-    class Logger
+    public class Logger
     {
         private static string logFileName = "stdlog.txt";
         private static string errorsLogFileName = "errors.txt";
 
         private static void WriteLine(string fileName, string msg)
         {
-            Console.WriteLine(msg);
+            /*Console.WriteLine(msg);
             System.Diagnostics.Debug.WriteLine(msg);
-            File.AppendAllText(fileName, "> " +DateTime.Now.ToString() + " > " + msg + Environment.NewLine);
+            File.AppendAllText(fileName, "> " +DateTime.Now.ToString() + " > " + msg + Environment.NewLine);*/
+
+            Database.WriteLog(fileName, msg);
         }
 
         public static void Log(string msg)

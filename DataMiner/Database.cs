@@ -185,5 +185,21 @@ namespace DataMiner
                 context.SaveChanges();
             }
         }
+
+        public static void WriteLog(string log, string message)
+        {
+            using (var context = new MonitorEntities())
+            {
+                var logEntry = new Log()
+                {
+                    Type = log,
+                    Timestamp = Helpers.GetSpbCurrentTime(),
+                    Message = message
+                };
+
+                context.Log.Add(logEntry);
+                context.SaveChanges();
+            }
+        }
     }
 }

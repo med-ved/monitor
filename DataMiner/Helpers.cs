@@ -32,6 +32,12 @@ namespace DataMiner
             return result;
         }
 
+        public static DateTime GetSpbCurrentTime()
+        {
+            var utc = DateTime.UtcNow;
+            return utc.AddHours(3);
+        }
+
         private static bool HasProperty(dynamic obj, string name)
         {
             try

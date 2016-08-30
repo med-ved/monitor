@@ -65,11 +65,6 @@ namespace DataMiner
             var html = Loader.Load(url);
 
             CQ dom = html;
-            //var minPrice = dom[".price-range-slider"].Attr("data-min-price-daily");
-            //var maxPrice = dom[".price-range-slider"].Attr("data-max-price-daily");
-
-
-
             var json = dom["#site-content .map-search"].Attr("data-bootstrap-data");
             var serializer = new JavaScriptSerializer();
             dynamic settings = serializer.Deserialize<object>(json);
@@ -242,7 +237,7 @@ namespace DataMiner
                     Country = request.Country,
                     City = request.Name
                 };
-                Logger.Log("Reading flat: " + FlatNumber++ + " FlatType: " + request.FlatType + " Time: " + DateTime.Now);
+                Logger.Log("Reading flat: " + FlatNumber++ + " FlatType: " + request.FlatType + " Time: " + Helpers.GetSpbCurrentTime());
 
                 if (!Database.IsFlatProcessed(flatRequest.Id, flatRequest.Date))
                 {

@@ -23,10 +23,10 @@ namespace DataMiner
             {
                 try
                 {
-                    var date = DateTime.Now.Date;
+                    var date = Helpers.GetSpbCurrentTime().Date;
                     if (CanStartReadingFlats(date))
                     {
-                        Logger.Log("Start time: " + DateTime.Now);
+                        Logger.Log("Start time: " + Helpers.GetSpbCurrentTime());
 
                         reader = new CityReader();
                         var request = new CityRequest()
@@ -93,8 +93,8 @@ namespace DataMiner
             {
                 try
                 {
-                    Logger.Log("Pingin application");
-                    var url = @"http://localhost:52371/Ping";
+                    //Logger.Log("Pingin application");
+                    var url = @"http://medved-001-site1.gtempurl.com/Ping";
                     Loader.Load(url);
                     Thread.Sleep(5000);
                 }

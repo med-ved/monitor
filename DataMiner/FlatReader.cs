@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -31,11 +32,7 @@ namespace DataMiner
 
         public FlatStatus CheckFlatStatus(FlatStatusRequest request)
         {
-            //Task.Run(() => MethodWithParameter(param));
             Logger.Log("Reading: " + request);
-            /*Task<FlatStatus> task = Task<FlatStatus>.Factory.StartNew(() => this.FlatStatusThread(request));
-            task.Wait();
-            FlatStatus result = task.Result;*/
             var result = this.FlatStatusThread(request);
             return result;
         }
@@ -138,6 +135,12 @@ namespace DataMiner
             result.Flat.Id = request.Id;
             result.Flat.Latitude = GetDouble(dom, "meta[property*=latitude]", "content");
             result.Flat.Longitude = GetDouble(dom, "meta[property*=longitude]", "content");
+
+            /*var latidude = GetString(dom, "meta[property*=latitude]", "content");
+            var longitude = GetString(dom, "meta[property*=longitude]", "content");
+            Logger.Log("Latidude=" + latidude.ToString());
+            Logger.Log("Longitude=" + longitude.ToString());*/
+
             result.Flat.Country = request.Country;
             result.Flat.City = request.City;
             result.Flat.Rating = GetDouble(dom, "#display-address .star-rating", "content");
@@ -305,14 +308,32 @@ namespace DataMiner
                 return null;
             }
 
-            str = str.Replace(".", ",");
+            /*str = str.Replace(".", ",");
             double result;
             if (double.TryParse(str, out result))
             {
                 return result;
+            }*/
+            return GetDouble(str, 0);
+
+            //return null;
+        }
+
+        public static double GetDouble(string value, double defaultValue)
+        {
+            double result;
+
+            //Try parsing in the current culture
+            if (!double.TryParse(value, System.Globalization.NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
+                //Then try in US english
+                !double.TryParse(value, System.Globalization.NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
+                //Then in neutral language
+                !double.TryParse(value, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+            {
+                result = defaultValue;
             }
 
-            return null;
+            return result;
         }
 
         private int? GetInt(CQ dom, string selector, string attr = null)
