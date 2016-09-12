@@ -136,11 +136,6 @@ namespace DataMiner
             result.Flat.Latitude = GetDouble(dom, "meta[property*=latitude]", "content");
             result.Flat.Longitude = GetDouble(dom, "meta[property*=longitude]", "content");
 
-            /*var latidude = GetString(dom, "meta[property*=latitude]", "content");
-            var longitude = GetString(dom, "meta[property*=longitude]", "content");
-            Logger.Log("Latidude=" + latidude.ToString());
-            Logger.Log("Longitude=" + longitude.ToString());*/
-
             result.Flat.Country = request.Country;
             result.Flat.City = request.City;
             result.Flat.Rating = GetDouble(dom, "#display-address .star-rating", "content");
@@ -308,15 +303,7 @@ namespace DataMiner
                 return null;
             }
 
-            /*str = str.Replace(".", ",");
-            double result;
-            if (double.TryParse(str, out result))
-            {
-                return result;
-            }*/
             return GetDouble(str, 0);
-
-            //return null;
         }
 
         public static double GetDouble(string value, double defaultValue)
@@ -324,11 +311,11 @@ namespace DataMiner
             double result;
 
             //Try parsing in the current culture
-            if (!double.TryParse(value, System.Globalization.NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
+            if (!double.TryParse(value, NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
                 //Then try in US english
-                !double.TryParse(value, System.Globalization.NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
+                !double.TryParse(value, NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
                 //Then in neutral language
-                !double.TryParse(value, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                !double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
             {
                 result = defaultValue;
             }

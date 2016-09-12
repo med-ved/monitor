@@ -113,7 +113,7 @@ namespace DataMiner
 
         public void Run()
         {
-            Task.Run(() => PingLoop());
+            //Task.Run(() => PingLoop());
             Task.Run(() => MainLoop());
         }
     }

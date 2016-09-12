@@ -31,7 +31,7 @@ namespace DataMiner
     public class CityReader
     {
         private int FlatNumber = 0;
-        private int QadrantNumber = 0;
+        private static int QadrantNumber = 0;
         private int DuplicateChecks = 0;
         private static int MaxFlats = 300;
         private static string[] FlatTypes = new string[] { "Entire+home%2Fapt", "Private+room", "Shared+room" };
@@ -219,7 +219,6 @@ namespace DataMiner
                 return;
             }
 
-            var tasks = new Task<FlatStatus>[flatsIds.Length];
             for (var i = 0; i < flatsIds.Length; i++)
             {
                 if (Stop)
@@ -227,8 +226,6 @@ namespace DataMiner
                     Logger.Log("Stopped ProcessPage 2");
                     return;
                 }
-
-                var flatReader = new FlatReader();
 
                 var flatRequest = new FlatStatusRequest()
                 {
@@ -244,6 +241,7 @@ namespace DataMiner
                     FlatStatus status = null;
                     try
                     {
+                        var flatReader = new FlatReader();
                         status = flatReader.CheckFlatStatus(flatRequest);
                     }
                     catch (Exception e)
@@ -252,7 +250,7 @@ namespace DataMiner
                     }
 
                     Database.Save(status);
-                    Thread.Sleep(7500);
+                    Thread.Sleep(8000);
                 }
                 else
                 {

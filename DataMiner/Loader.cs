@@ -22,6 +22,8 @@ namespace DataMiner
                 {
                     using (var client = new WebClient())
                     {
+                        //var wp = new WebProxy("119.6.136.122:80");
+                        //client.Proxy = wp;
                         client.Encoding = Encoding.UTF8;
                         client.Headers.Add("User-Agent: Other");
                         html = client.DownloadString(url);
@@ -32,7 +34,7 @@ namespace DataMiner
                 catch (WebException e)
                 {
                     Logger.LogError(e, url);
-                    Thread.Sleep(60000*20);
+                    Thread.Sleep(60000*30);
                 }
             }
 

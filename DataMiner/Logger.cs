@@ -12,11 +12,11 @@ namespace DataMiner
         private static string logFileName = "stdlog.txt";
         private static string errorsLogFileName = "errors.txt";
 
-        private static void WriteLine(string fileName, string msg)
+        public static void WriteLine(string fileName, string msg)
         {
-            /*Console.WriteLine(msg);
-            System.Diagnostics.Debug.WriteLine(msg);
-            File.AppendAllText(fileName, "> " +DateTime.Now.ToString() + " > " + msg + Environment.NewLine);*/
+            //Console.WriteLine(msg);
+            //System.Diagnostics.Debug.WriteLine(msg);
+            //File.AppendAllText(fileName, "> " +DateTime.Now.ToString() + " > " + msg + Environment.NewLine);
 
             Database.WriteLog(fileName, msg);
         }
@@ -39,8 +39,8 @@ namespace DataMiner
 
         public static void LogError(Exception e, string msg = "")
         {
-            WriteLine(errorsLogFileName, "");
-            if (string.IsNullOrWhiteSpace(msg))
+            //WriteLine(errorsLogFileName, "");
+            if (!string.IsNullOrWhiteSpace(msg))
             {
                 WriteLine(errorsLogFileName, msg);
             }

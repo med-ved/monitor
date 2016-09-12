@@ -61,12 +61,7 @@ namespace airbnbmonitor.Controllers
                 result = client.DownloadString(url);
             }*/
 
-            var reader = new FlatReader();
-            var request = new FlatStatusRequest() {  Id = 6013626, Date = new DateTime(2016, 6, 25),
-                Country="Russia", City = "Saint Petersburg" };
-
-            var result = reader.CheckFlatStatus(request);
-            var viewModel = new ContaclViewModel() { UrlContent = result.Price.ToString() };
+            var viewModel = new ContaclViewModel() { UrlContent = "" };
             return View(viewModel);
         }
 
