@@ -31,5 +31,6 @@ namespace DataMiner
         public virtual DbSet<Description> Description { get; set; }
         public virtual DbSet<Flats> Flats { get; set; }
         public virtual DbSet<Log> Log { get; set; }
+        public virtual DbSet<Proxyes> Proxyes { get; set; }
     }
 }

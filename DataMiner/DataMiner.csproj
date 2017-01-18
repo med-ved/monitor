@@ -67,6 +67,7 @@
       <DependentUpon>Monitor.tt</DependentUpon>
     </Compile>
     <Compile Include="Flat.cs" />
+    <Compile Include="FlatProcessedChecker.cs" />
     <Compile Include="FlatReader.cs" />
     <Compile Include="Flats.cs">
       <DependentUpon>Monitor.tt</DependentUpon>
@@ -97,6 +98,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProxyCache.cs" />
+    <Compile Include="Proxyes.cs">
+      <DependentUpon>Monitor.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProxyList.cs" />
     <Compile Include="Settings.cs">
       <DependentUpon>Monitor.tt</DependentUpon>
     </Compile>

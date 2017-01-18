@@ -8,17 +8,33 @@ using System.Web.Hosting;
 
 namespace DataMiner
 {
-    public class Program : IRegisteredObject
+    public class Program //: IRegisteredObject
     {
         private CityReader reader = null;
+        private bool _logToConsole = false;
+
+        public bool LogToConsole
+        {
+            get
+            {
+                return _logToConsole;
+            }
+            set
+            {
+                _logToConsole = value;
+                Logger.LogToConsole = value;
+            }
+        }
 
         public Program()
         {
-            HostingEnvironment.RegisterObject(this);
+            //HostingEnvironment.RegisterObject(this);
         }
 
         private void MainLoop()
         {
+            Loader.Init();
+            Thread.Sleep(10 * 60 * 1000);
             while(true)
             {
                 try
@@ -26,6 +42,7 @@ namespace DataMiner
                     var date = Helpers.GetSpbCurrentTime().Date;
                     if (CanStartReadingFlats(date))
                     {
+                        FlatProcessedChecker.Init(date);
                         Logger.Log("Start time: " + Helpers.GetSpbCurrentTime());
 
                         reader = new CityReader();
@@ -42,16 +59,8 @@ namespace DataMiner
 
                         Database.SetLatestProcessedDate(date, false);
                         reader.CheckCityStatus(request);
-                       
-                        if (!reader.Stop)
-                        {
-                            Database.SetLatestProcessedDate(date, true);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                        
+                        Database.SetLatestProcessedDate(date, true);
+
                         Logger.Log("DONE.");
                     }
 
@@ -87,33 +96,14 @@ namespace DataMiner
             return false;
         }
 
-        public void PingLoop()
+        /*public void Stop(bool immediate)
         {
-            while(true)
-            {
-                try
-                {
-                    //Logger.Log("Pingin application");
-                    var url = @"http://medved-001-site1.gtempurl.com/Ping";
-                    Loader.Load(url);
-                    Thread.Sleep(5000);
-                }
-                catch(Exception e)
-                {
-                    Logger.LogError(e);
-                }
-            }
-        }
-
-        public void Stop(bool immediate)
-        {
-            reader.Stop = true;
+            reader.Stop.Value = true;
             HostingEnvironment.UnregisterObject(this);
-        }
+        }*/
 
         public void Run()
         {
-            //Task.Run(() => PingLoop());
             Task.Run(() => MainLoop());
         }
     }

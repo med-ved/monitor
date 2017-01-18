@@ -33,7 +33,7 @@ namespace DataMiner
         public FlatStatus CheckFlatStatus(FlatStatusRequest request)
         {
             Logger.Log("Reading: " + request);
-            var result = this.FlatStatusThread(request);
+            var result = FlatStatusThread(request);
             return result;
         }
 
@@ -41,25 +41,40 @@ namespace DataMiner
         {
             string url = String.Format("https://www.airbnb.ru/rooms/{0}?check_in={1:yyyy-MM-dd}&guests=1&check_out={2:yyyy-MM-dd}",
                 request.Id, request.Date, request.Date.AddDays(1));
-            string html = null;
 
-            html = Loader.Load(url);
-            if (html == null)
+            int n = 0;
+            while(true)
             {
-                return null;
-            }
+                string html = null;
 
-            CQ dom = html;
-            var result = ParseResult(dom, request);
+                html = Loader.Load(url);
+                if (html == null)
+                {
+                    return null;
+                }
 
+                CQ dom = html;
+                var result = ParseResult(dom, request);
+                var apiSettings = dom["#_bootstrap-layout-init"].Attr("content");
+                if (apiSettings == null)
+                {
+                    n++;
+                    if (n > 3)
+                    {
+                        Logger.WriteLine("errors.txt", string.Format("Cant read AVAILABILITY of flat {0}", request.Id));
+                        return null;
+                    }
+                    continue;
+                }
+
+                var serializer = new JavaScriptSerializer();
+                dynamic apiSettingsObj = serializer.Deserialize<object>(apiSettings);
+                string key = Helpers.GetIfExists(apiSettingsObj, new string[] { "api_config", "key" });
+
+                result.Available = GetFlatAvailability(request, dom, key);
+                return result;
+            } 
             
-            var apiSettings = dom["#_bootstrap-layout-init"].Attr("content");
-            var serializer = new JavaScriptSerializer();
-            dynamic apiSettingsObj = serializer.Deserialize<object>(apiSettings);
-            string key = Helpers.GetIfExists(apiSettingsObj, new string[] { "api_config", "key" });
-
-            result.Available = GetFlatAvailability(request, dom, key);
-            return result;
         }
 
         private bool? GetFlatAvailability(FlatStatusRequest request, CQ dom, string key)

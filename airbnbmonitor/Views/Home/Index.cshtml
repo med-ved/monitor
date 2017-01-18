@@ -2,19 +2,7 @@
     ViewBag.Title = "Home Page";
 }
 
-<div id="map" style="width: 600px; height: 400px"></div>
+<meta id="data" data-monitoring="@ViewBag.Marks"/>
 
-<script type="text/javascript">
-    ymaps.ready(init);
-    var myMap;
+<div id="map" style="width: 1920px; height: 1080px"></div>
 
-    function init() {
-        myMap = new ymaps.Map("map", {
-            center: [55.76, 37.64],
-            zoom: 10
-        });
-
-        myPlacemark = new ymaps.Placemark([55.76, 37.64], { hintContent: 'Москва!', balloonContent: 'Я там был!' });
-        myMap.geoObjects.add(myPlacemark);
-    }
-</script>

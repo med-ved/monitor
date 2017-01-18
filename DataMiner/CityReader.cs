@@ -10,6 +10,8 @@ using CsQuery;
 
 namespace DataMiner
 {
+    public enum CityReaderResult { Exception, Stopped, DateChanged, Ok }
+
     public class CityRequest
     {
         public string Name { get; set; }
@@ -22,61 +24,99 @@ namespace DataMiner
         public double StartLatitude { get; set; }
         public double EndLatitude { get; set; }
 
+        public CityRequest Copy()
+        {
+            var copy = new CityRequest()
+            {
+                Name = this.Name,
+                Country = this.Country,
+                Date = this.Date,
+                FlatType = this.FlatType
+            };
+
+            return copy;
+        }
+
         public override string ToString()
         {
             return String.Format("Date={0}, Country={1}, City={2}, FlatType={3}", Date, Country, Name, FlatType);
         }
     }
 
-    public class CityReader
+    public class ThreadSafeValue<T>
     {
-        private int FlatNumber = 0;
-        private static int QadrantNumber = 0;
-        private int DuplicateChecks = 0;
-        private static int MaxFlats = 300;
-        private static string[] FlatTypes = new string[] { "Entire+home%2Fapt", "Private+room", "Shared+room" };
+        private object _lock = new object();
+        private T _val = default(T);
 
-        private object locker = new object();
-        private bool _stop = false;
-        public bool Stop
+        public ThreadSafeValue(T initialValue = default(T))
+        {
+            Value = initialValue;
+        }   
+
+        public T Value
         {
             get
             {
-                lock (locker)
+                lock (_lock)
                 {
-                    return _stop;
+                    return _val;
                 }
-                
             }
+
             set
             {
-                lock (locker)
+                lock (_lock)
                 {
-                    _stop = value;
+                    _val = value;
                 }
             }
         }
+    }
+
+    public class CityReader
+    {
+        private ThreadSafeValue<int> FlatNumber = new ThreadSafeValue<int>();
+        private static ThreadSafeValue<int> QadrantNumber = new ThreadSafeValue<int>();
+        private ThreadSafeValue<int> DuplicateChecks = new ThreadSafeValue<int>();
+        private static ThreadSafeValue<int> MaxFlats = new ThreadSafeValue<int>(300);
+
+        //public ThreadSafeValue<bool> Stop = new ThreadSafeValue<bool>();
+        public ThreadSafeValue<bool> DateChanged = new ThreadSafeValue<bool>();
+
+        /*public bool CheckCityQadrandThread(CityRequest request, string minPrice, string maxPrice)
+        {
+            Logger.Log("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
+                            QadrantNumber.Value++, request.StartLatitude, request.StartLongitude, request.EndLatitude, request.EndLongitude);
+
+            while(true)
+            {
+                try
+                {
+                    CheckFlats(request, Convert.ToInt32(minPrice), Convert.ToInt32(maxPrice));
+                    return true; //CityReaderResult.Ok;
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e);
+                    //return CityReaderResult.Exception;
+                }
+            }
+        }*/
 
         public bool CheckCityStatus(CityRequest r)
         {
             Logger.Log("Reading city: " + r);
-            string url = String.Format("https://www.airbnb.ru/s/{0}--{1}?zoom=10&sw_lat={2}&sw_lng={3}&ne_lat={4}&ne_lng={5}", 
-                r.Name, r.Country, r.StartLatitude.ToGBString(), r.StartLongitude.ToGBString(), r.EndLatitude.ToGBString(), r.EndLongitude.ToGBString()); //Saint-Petersburg--Russia
-            var html = Loader.Load(url);
 
-            CQ dom = html;
-            var json = dom["#site-content .map-search"].Attr("data-bootstrap-data");
-            var serializer = new JavaScriptSerializer();
-            dynamic settings = serializer.Deserialize<object>(json);
-            var prices = Helpers.GetIfExists(settings, new[] { "results_json", "metadata", "search" });
-            var minPrice = Helpers.GetIfExists(prices, "price_range_min_native");
-            var maxPrice = Helpers.GetIfExists(prices, "price_range_max_native");
+            var minPrice = "640";
+            var maxPrice = "50000";
 
             int latDiv = 2;
             int longDiv = 2;
 
             double latPart = (r.EndLatitude - r.StartLatitude) / (double)latDiv;
             double longPart = (r.EndLongitude - r.StartLongitude) / (double)longDiv;
+
+            //var threads = new List<Task<bool>>();
             for(int i = 0; i < latDiv; i++)
             {
                 for (int j = 0; j < longDiv; j++)
@@ -94,11 +134,11 @@ namespace DataMiner
                     };
 
                     Logger.Log("Reading map qadrant {0}, startLatitude={1}, startLongitude={2}, endLatitude={3}, endLongitude={4}",
-                            QadrantNumber++, request.StartLatitude, request.StartLongitude, request.EndLatitude, request.EndLongitude);
+                            QadrantNumber.Value++, request.StartLatitude, request.StartLongitude, request.EndLatitude, request.EndLongitude);
 
                     try
                     {
-                        if (Stop)
+                        if (DateChanged.Value)
                         {
                             Logger.Log("Stopped CheckCityStatus");
                             return false;
@@ -110,9 +150,15 @@ namespace DataMiner
                     {
                         Logger.LogError(e);
                     }
-                    
+                    //var t = Task.Factory.StartNew(() => CheckCityQadrandThread(request, minPrice, maxPrice));
+                    //threads.Add(t);
                 }
             }
+
+            /*for(int i = 0; i < threads.Count; i++)
+            {
+                threads[i].Wait();
+            }*/
 
             return true;
         }
@@ -124,25 +170,24 @@ namespace DataMiner
                 return;
             }
 
-            Thread.Sleep(2000);
             var result = ReadFlats(request, min, max);
-            var totalCount = Helpers.GetIfExists(result, "visible_results_count");
+            var totalCount = Helpers.GetIfExists(result, new string[] { "results_json", "metadata", "listings_count" });
 
             Logger.Log(String.Format("min: {0}, max: {1}, total_apartments: {2} ", min, max, totalCount));
-            if (totalCount >= MaxFlats)
+            if (totalCount >= MaxFlats.Value)
             {
-                if (Stop)
+                if (DateChanged.Value)
                 {
-                    Logger.Log("Stopped CheckFlats");
+                    Logger.Log("Stopped CheckFlats 1");
                     return;
                 }
 
                 int half = (max - min) / 2;
                 CheckFlats(request, min, min + half);
 
-                if (Stop)
+                if (DateChanged.Value)
                 {
-                    Logger.Log("Stopped CheckFlats");
+                    Logger.Log("Stopped CheckFlats 2");
                     return;
                 }
                 CheckFlats(request, min + half + 1, max);
@@ -190,9 +235,9 @@ namespace DataMiner
             ProcessPage(request, data);
             for (int i = 2; i < pages + 1; i++)
             {
-                if (Stop)
+                if (DateChanged.Value)
                 {
-                    Logger.Log("Stopped ProcessFlats");
+                    Logger.Log("Stopped ProcessFlats 1");
                     return;
                 }
                 ProcessPage(request, min, max, i);
@@ -201,7 +246,7 @@ namespace DataMiner
 
         private void ProcessPage(CityRequest request, int min, int max, int page)
         {
-            if (Stop)
+            if (DateChanged.Value)
             {
                 Logger.Log("Stopped ProcessPage 1");
                 return;
@@ -213,50 +258,95 @@ namespace DataMiner
 
         private void ProcessPage(CityRequest request, dynamic data)
         {
-            var flatsIds = Helpers.GetIfExists(data, "property_ids");
-            if (flatsIds == null)
+            List<int> flatsIds = GetFlatsIds(data);
+            var threads = new List<Task<bool>>();
+            for (var i = 0; i < flatsIds.Count; i++)
             {
-                return;
+                var n = i;
+                var t = Task<bool>.Factory.StartNew(() => FlatReadThread(flatsIds[n], request.Copy()));
+                threads.Add(t);
             }
 
-            for (var i = 0; i < flatsIds.Length; i++)
+            for(int j = 0; j < threads.Count; j++)
             {
-                if (Stop)
-                {
-                    Logger.Log("Stopped ProcessPage 2");
-                    return;
-                }
+                threads[j].Wait();
+            }
+        }
 
-                var flatRequest = new FlatStatusRequest()
-                {
-                    Id = flatsIds[i],
-                    Date = request.Date,
-                    Country = request.Country,
-                    City = request.Name
-                };
-                Logger.Log("Reading flat: " + FlatNumber++ + " FlatType: " + request.FlatType + " Time: " + Helpers.GetSpbCurrentTime());
+        private bool FlatReadThread(int flatId, CityRequest request)
+        { 
+            if (Helpers.GetSpbCurrentTime().Date > request.Date)
+            {
+                Logger.Log("DATE CHANGEND. DONE");
+                DateChanged.Value = true;
+            }
 
-                if (!Database.IsFlatProcessed(flatRequest.Id, flatRequest.Date))
+            if (DateChanged.Value)
+            {
+                Logger.Log("Stopped ProcessPage 2");
+                return true;
+            }
+
+            var flatRequest = new FlatStatusRequest()
+            {
+                Id = flatId,//flatsIds[i],
+                Date = request.Date,
+                Country = request.Country,
+                City = request.Name
+            };
+            
+            //Logger.Log(">>Reading flat: " + FlatNumber.Value + " Time: " + Helpers.GetSpbCurrentTime() 
+            //    + " Duplicate checks count" + DuplicateChecks.Value);
+
+            if (!FlatProcessedChecker.Check(flatRequest.Id)) //!Database.IsFlatProcessed(flatRequest.Id, flatRequest.Date))
+            {
+                FlatStatus status = null;
+                try
                 {
-                    FlatStatus status = null;
-                    try
-                    {
-                        var flatReader = new FlatReader();
-                        status = flatReader.CheckFlatStatus(flatRequest);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogError(e);
-                    }
+                    var flatReader = new FlatReader();
+                    status = flatReader.CheckFlatStatus(flatRequest);
+                    FlatNumber.Value++;
 
                     Database.Save(status);
-                    Thread.Sleep(8000);
+                    FlatProcessedChecker.Add(flatRequest.Id);
                 }
-                else
+                catch (Exception e)
                 {
-                    Logger.Log("Flat already processed. Duplicate checks count: " + DuplicateChecks++);
+                    Logger.LogError(e);
                 }
             }
+            else
+            {
+                DuplicateChecks.Value++;
+            }
+
+            return true;
+        }
+
+        private List<int> GetFlatsIds(dynamic data)
+        {
+            if (data == null)
+            {
+                return new List<int>();
+            }
+
+            var list = Helpers.GetIfExists(data, new string[] { "results_json", "search_results" });
+            if (list == null)
+            {
+                return new List<int>();
+            }
+
+            var result = new List<int>();
+            for(var i=0; i < list.Length; i++)
+            {
+                var id = Helpers.GetIfExists(list[i], new string[] { "listing", "id" });
+                if (id != null)
+                {
+                    result.Add(id);                     
+                }
+            }
+
+            return result;
         }
     }
 

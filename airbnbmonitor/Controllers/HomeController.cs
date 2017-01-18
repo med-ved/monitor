@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using DataMiner;
+using airbnbmonitor.Code;
 
 namespace airbnbmonitor.Controllers
 {
@@ -30,16 +31,14 @@ namespace airbnbmonitor.Controllers
     {
         public ActionResult Index()
         {
+            var monitoring = new Monitoring();
+            ViewBag.Marks = monitoring.GetData();
             return View();
         }
 
         public ActionResult About()
         {
             //ViewBag.Message = "Your application description page.";
-            var r = new CityReader();
-            var request = new CityRequest() { Name = "Saint-Petersburg", Country = "Russia", Date = DateTime.Now };
-            r.CheckCityStatus(request);
-
             return View();
         }
 

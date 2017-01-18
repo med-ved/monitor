@@ -99,6 +99,20 @@
           <Property Name="Message" Type="nvarchar(max)" />
           <Property Name="Timestamp" Type="datetime2" Precision="7" />
         </EntityType>
+        <EntityType Name="Proxyes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Url" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Port" Type="int" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Ping" Type="int" />
+          <Property Name="LastUsageTime" Type="datetime2" Precision="7" />
+          <Property Name="LastErrorTime" Type="datetime2" Precision="7" />
+          <Property Name="LastError" Type="nvarchar(max)" />
+          <Property Name="UseCount" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Settings">
           <Key>
             <PropertyRef Name="Id" />
@@ -149,6 +163,7 @@
           <EntitySet Name="Flats" EntityType="Self.Flats" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FlatStatuses" EntityType="Self.FlatStatuses" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Log" EntityType="Self.Log" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Proxyes" EntityType="Self.Proxyes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Settings" EntityType="Self.Settings" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Flats_Description" Association="Self.FK_Flats_Description">
             <End Role="Description" EntitySet="Description" />
@@ -186,6 +201,7 @@
             <End Role="FlatStatuses" EntitySet="FlatStatuses" />
           </AssociationSet>
           <EntitySet Name="Log" EntityType="MonitorModel.Log" />
+          <EntitySet Name="Proxyes" EntityType="MonitorModel.Proxyes" />
         </EntityContainer>
         <EntityType Name="Facilities">
           <Key>
@@ -331,6 +347,20 @@
           <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Timestamp" Type="DateTime" Precision="7" />
         </EntityType>
+        <EntityType Name="Proxyes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Url" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Port" Type="Int32" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="Ping" Type="Int32" />
+          <Property Name="LastUsageTime" Type="DateTime" Precision="7" />
+          <Property Name="LastErrorTime" Type="DateTime" Precision="7" />
+          <Property Name="LastError" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UseCount" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -441,6 +471,21 @@
                 <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
                 <ScalarProperty Name="Message" ColumnName="Message" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Proxyes">
+            <EntityTypeMapping TypeName="MonitorModel.Proxyes">
+              <MappingFragment StoreEntitySet="Proxyes">
+                <ScalarProperty Name="UseCount" ColumnName="UseCount" />
+                <ScalarProperty Name="LastError" ColumnName="LastError" />
+                <ScalarProperty Name="LastErrorTime" ColumnName="LastErrorTime" />
+                <ScalarProperty Name="LastUsageTime" ColumnName="LastUsageTime" />
+                <ScalarProperty Name="Ping" ColumnName="Ping" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Port" ColumnName="Port" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

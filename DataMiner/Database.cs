@@ -201,5 +201,139 @@ namespace DataMiner
                 context.SaveChanges();
             }
         }
+
+        public static IEnumerable<Proxy> GetProxies()
+        {
+            using (var context = new MonitorEntities())
+            {
+                var proxyes = context.Proxyes.ToList();
+                var result = new List<Proxy>();
+                foreach(var p in proxyes)
+                {
+                    var pr = new Proxy();
+                    pr.Uid = p.Id;
+                    pr.Url = p.Url;
+                    pr.Port = p.Port.HasValue ? p.Port.Value : 80;
+                    pr.Ping = p.Ping.HasValue ? p.Ping.Value : -1;
+                    pr.LastUsageTime = p.LastUsageTime;
+                    pr.Status = (ProxyStatus)p.Status;
+
+                    result.Add(pr);
+                }
+
+                return result;
+            }
+        }
+
+        private static Proxy GetDummyProxy()
+        {
+            var p = new Proxy();
+            p.Status = ProxyStatus.DontUpdate;
+            p.Ping = -1;
+            p.LastUsageTime = null;
+            p.LastErrorTime = null;
+            p.LastError = null;
+
+            return p;
+        }
+
+        public static void SetProxyStatus(Guid uid, ProxyStatus status = ProxyStatus.DontUpdate, int ping = -1, DateTime? lastUsageTime = null)
+        {
+            var p = GetDummyProxy();
+            p.Uid = uid;
+            p.Status = status;
+            p.Ping = ping;
+            p.LastUsageTime = lastUsageTime.HasValue ? lastUsageTime : null;
+
+            Database.UpdateProxy(p);
+        }
+
+        private static void UpdateProxy(Proxy p)
+        {
+            using(var context = new MonitorEntities())
+            {
+                var proxy = context.Proxyes.Where(r => r.Id == p.Uid).FirstOrDefault();
+                if (proxy == null)
+                {
+                    Logger.LogError(String.Format("Proxye {0}:{1} ({2}) not found in db", p.Url, p.Port, p.Uid));
+                    return;
+                }
+
+                if (p.Status != ProxyStatus.DontUpdate)
+                {
+                    proxy.Status = (int)p.Status;
+                }
+
+                if (p.Ping != -1)
+                {
+                    proxy.Ping = p.Ping;
+                }
+
+                if (p.LastUsageTime != null)
+                {
+                    proxy.LastUsageTime = p.LastUsageTime;
+                }
+
+                if (p.LastErrorTime != null)
+                {
+                    proxy.LastErrorTime = p.LastErrorTime;
+                }
+
+                if (p.LastError != null)
+                {
+                    proxy.LastError = p.LastError;
+                }
+
+                context.SaveChanges();
+            }
+        }
+
+        public static void UpdateProxyPing(Guid uid, ProxyStatus status = ProxyStatus.DontUpdate)
+        {
+            using (var context = new MonitorEntities())
+            {
+                var proxy = context.Proxyes.Where(r => r.Id == uid).FirstOrDefault();
+                if (proxy == null)
+                {
+                    Logger.LogError(String.Format("Proxye {0} not found in db", uid));
+                    return;
+                }
+
+                var span = DateTime.Now - proxy.LastUsageTime;
+                proxy.Ping = span.HasValue ? Convert.ToInt32(span.Value.TotalMilliseconds) : -1;
+                if (status != ProxyStatus.DontUpdate)
+                {
+                    proxy.Status = (int)status;
+                }
+
+                context.SaveChanges();
+            }
+        }
+
+        public static void IncProxyUseCount(Guid uid)
+        {
+            using (var context = new MonitorEntities())
+            {
+                var proxy = context.Proxyes.Where(r => r.Id == uid).FirstOrDefault();
+                if (proxy == null)
+                {
+                    Logger.LogError(String.Format("Proxye {0} not found in db", uid));
+                    return;
+                }
+
+                proxy.UseCount++;
+                proxy.LastUsageTime = DateTime.Now;
+                context.SaveChanges();
+            }
+        }
+
+        public static IEnumerable<long> GetProcessedFlatsIds(DateTime date)
+        {
+            using (var context = new MonitorEntities())
+            {
+                return context.FlatStatuses.Where(fs => fs.Date.Value == date && fs.FlatId.HasValue)
+                    .Select(fs => fs.FlatId.Value).ToList();
+            }
+        }
     }
 }

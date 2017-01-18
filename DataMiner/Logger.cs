@@ -9,16 +9,23 @@ namespace DataMiner
 {
     public class Logger
     {
+        public static bool LogToConsole { get; set; }
         private static string logFileName = "stdlog.txt";
         private static string errorsLogFileName = "errors.txt";
 
         public static void WriteLine(string fileName, string msg)
         {
-            //Console.WriteLine(msg);
+            if (LogToConsole)
+            {
+                Console.WriteLine(DateTime.Now.ToString() + " > " + msg);
+            }
+            else
+            {
+                Database.WriteLog(fileName, msg);
+            }
+
             //System.Diagnostics.Debug.WriteLine(msg);
             //File.AppendAllText(fileName, "> " +DateTime.Now.ToString() + " > " + msg + Environment.NewLine);
-
-            Database.WriteLog(fileName, msg);
         }
 
         public static void Log(string msg)
