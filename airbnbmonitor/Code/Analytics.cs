@@ -17,6 +17,91 @@
             _cachedFlats = cachedFlats;
         }
 
+        public MonitoringData GetData(MonitoringDataType type)
+        {
+            /*
+                нужны следующие данные
+                1) средний доход за период
+                2) средняя заполняемость за период
+                3) средний доход и средняя заполняемость по месяцам
+
+            1 и 2 можно вычислить на основе 3
+            Если в не сезон (октябрь-апрель) у квартиры 100% заполняемость, значит она сдана в долгосрок
+
+            Нужна 3 по отдельным квартирам
+                */
+
+            var startOfThePeriod = new DateTime(2016, 10, 1);
+            var endOfThePeriod = DateTime.Now;
+
+            var flatsList = FilterByPeriod(_cachedFlats.FlatsData, startOfThePeriod, endOfThePeriod);
+            if (type == MonitoringDataType.TopOccupacy)
+            {
+                flatsList = flatsList.OrderByDescending(f => f.OccupacyPercent).Take(flatsList.Count() / 10).ToList();
+            }
+
+            if (type == MonitoringDataType.TopRevenue)
+            {
+                flatsList = flatsList.OrderByDescending(f => f.EstimatedRevenue).Take(flatsList.Count() / 10).ToList();
+            }
+
+            var settings = new GridMapperSettings()
+            {
+                StartLatitude = 59.79219567461983, //niz
+                EndLatitude = 60.04839774295754, //verh
+                StartLongitude = 29.818058044888858, //levo
+                EndLongitude = 30.817813904263858,  //pravo
+
+                ColumnsCount = 120,
+                RowsCount = 80,
+            };
+
+            var gridMapper = new GridMapper();
+            var grid = gridMapper.MakeGrid(flatsList, settings);
+
+            var flatsInfoList = flatsList.Select(f => new FlatInfo(f)).ToList();
+            var result = new MonitoringData
+            {
+                FlatsInfoList = flatsInfoList,
+                FlatsGrid = grid,
+                Summary = _GetDataForFlats(flatsList, startOfThePeriod, endOfThePeriod)
+            };
+
+            return result;
+        }
+
+        public FlatsSummary GetDataForFlats(IEnumerable<long> flatIds, DateTime startTime, DateTime endTime)
+        {
+            var flatsList = CreateFlatsList(_cachedFlats, flatIds);
+            return _GetDataForFlats(flatsList, startTime, endTime);
+        }
+
+        public SingleFlatSummary GetFlat(Flat flat, DateTime startTime, DateTime endTime)
+        {
+            return new SingleFlatSummary()
+            {
+                Flat = flat,
+                Summary = GetDataForFlats(new long[] { flat.Id }, startTime, endTime)
+            };
+        }
+
+        public FlatsSummary _GetDataForFlats(IEnumerable<FlatData> flatsList, DateTime startTime, DateTime endTime)
+        {
+            var result = new FlatsSummary();
+            if (!flatsList.Any())
+            {
+                return result;
+            }
+
+            result.FlatsCount = flatsList.Count();
+            result.GraphData = CreateFlatsGraphData(flatsList, startTime, endTime);
+            result.AvgEstimatedMonthlyRevenue = result.GraphData.Summary.AvgEstimatedMonthlyRevenue;
+            result.AvgOccupacyPercent = result.GraphData.Summary.AvgOccupacyPercent;
+            result.AvgRevenuePerDay = result.GraphData.Summary.AvgRevenuePerDay;
+
+            return result;
+        }
+
         private void AddMonthlyData(FlatMonthlySummary total, FlatMonthlyData dataToAdd)
         {
             total.AvgEstimatedMonthlyRevenue += dataToAdd.EstimatedMonthlyRevenue;
@@ -179,89 +264,39 @@
             return flatsList;
         }
 
-        public FlatsSummary _GetDataForFlats(IEnumerable<FlatData> flatsList, DateTime startTime, DateTime endTime)
+        private IEnumerable<FlatData> FilterByPeriod(IEnumerable<FlatData> flats, DateTime startDate, DateTime endDate)
         {
-            var result = new FlatsSummary();
-            if (!flatsList.Any())
+            foreach (var f in flats)
             {
-                return result;
+                foreach (var m in f.MonthlyData)
+                {
+                    if (!(m.Date >= startDate && m.Date <= endDate))
+                    {
+                        f.MonthlyDataDict.Remove(m.Date);
+                    }
+                }
+
+                f.MonthlyData = f.MonthlyData.Where(m => m.Date >= startDate && m.Date <= endDate).ToList();
             }
 
-            result.FlatsCount = flatsList.Count();
-            result.GraphData = CreateFlatsGraphData(flatsList, startTime, endTime);
-            result.AvgEstimatedMonthlyRevenue = result.GraphData.Summary.AvgEstimatedMonthlyRevenue;
-            result.AvgOccupacyPercent = result.GraphData.Summary.AvgOccupacyPercent;
-            result.AvgRevenuePerDay = result.GraphData.Summary.AvgRevenuePerDay;
-
-            return result;
-        }
-
-        public MonitoringData GetData(MonitoringDataType type)
-        {
-            /*
-                нужны следующие данные
-                1) средний доход за период
-                2) средняя заполняемость за период
-                3) средний доход и средняя заполняемость по месяцам
-
-            1 и 2 можно вычислить на основе 3
-            Если в не сезон (октябрь-апрель) у квартиры 100% заполняемость, значит она сдана в долгосрок
-
-            Нужна 3 по отдельным квартирам
-                */
-
-            var startOfThePeriod = new DateTime(2016, 10, 1);
-            var endOfThePeriod = DateTime.Now;
-
-            var flatsList = _cachedFlats.FlatsData;
-            if (type == MonitoringDataType.TopOccupacy)
+            var filteredFlats = flats.Where(f => f.MonthlyData.Any());
+            foreach (var flatData in filteredFlats)
             {
-                flatsList = flatsList.OrderByDescending(f => f.OccupacyPercent).Take(flatsList.Count() / 10).ToList();
+                if (flatData.MonthlyData.Count == 0)
+                {
+                    flatData.OccupacyPercent = 0;
+                    flatData.RevenuePerDay = 0;
+                    flatData.EstimatedRevenue = 0;
+                }
+                else
+                {
+                    flatData.OccupacyPercent = flatData.MonthlyData.Sum(f => f.OccupacyPercent) / flatData.MonthlyData.Count;
+                    flatData.RevenuePerDay = flatData.MonthlyData.Sum(f => f.RevenuePerDay) / flatData.MonthlyData.Count;
+                    flatData.EstimatedRevenue = flatData.MonthlyData.Sum(f => f.EstimatedMonthlyRevenue) / flatData.MonthlyData.Count;
+                }
             }
 
-            if (type == MonitoringDataType.TopRevenue)
-            {
-                flatsList = flatsList.OrderByDescending(f => f.EstimatedRevenue).Take(flatsList.Count() / 10).ToList();
-            }
-
-            var settings = new GridMapperSettings()
-            {
-                StartLatitude = 59.79219567461983, //niz
-                EndLatitude = 60.04839774295754, //verh
-                StartLongitude = 29.818058044888858, //levo
-                EndLongitude = 30.817813904263858,  //pravo
-
-                ColumnsCount = 120,
-                RowsCount = 80,
-            };
-
-            var gridMapper = new GridMapper();
-            var grid = gridMapper.MakeGrid(flatsList, settings);
-
-            var flatsInfoList = flatsList.Select(f => new FlatInfo(f)).ToList();
-            var result = new MonitoringData
-            {
-                FlatsInfoList = flatsInfoList,
-                FlatsGrid = grid,
-                Summary = _GetDataForFlats(flatsList, startOfThePeriod, endOfThePeriod)
-            };
-
-            return result;
-        }
-
-        public FlatsSummary GetDataForFlats(IEnumerable<long> flatIds, DateTime startTime, DateTime endTime)
-        {
-            var flatsList = CreateFlatsList(_cachedFlats, flatIds);
-            return _GetDataForFlats(flatsList, startTime, endTime);
-        }
-
-        public SingleFlatSummary GetFlat(Flat flat, DateTime startTime, DateTime endTime)
-        {
-            return new SingleFlatSummary()
-            {
-                Flat = flat,
-                Summary = GetDataForFlats(new long[] { flat.Id }, startTime, endTime)
-            };
+            return filteredFlats;
         }
     }
 }
