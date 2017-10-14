@@ -1,87 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using System.IO;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using DataMiner;
-using airbnbmonitor.Code;
-
-namespace airbnbmonitor.Controllers
+﻿namespace airbnbmonitor.Controllers
 {
-    public class ContaclViewModel
-    {
-        public string UrlContent { get; set; }
-    }
-
-    class MyWebClient : WebClient
-    {
-        protected override WebRequest GetWebRequest(Uri address)
-        {
-            HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-            request.ClientCertificates.Add(new X509Certificate());
-            return request;
-        }
-    }
+    using System;
+    using System.Collections.Generic;
+    using System.Web.Mvc;
+    using DataMiner.Database;
+    using airbnbmonitor.Code;
+    using System.Web.Script.Serialization;
+    using Ninject;
 
     public class HomeController : Controller
     {
+        private readonly IDatabase _db;
+        private readonly IKernel _kernel;
+
+        public HomeController(IDatabase db, IKernel kernel)
+        {
+            _kernel = kernel;
+            _db = db; 
+        }
+
         public ActionResult Index()
         {
-            var monitoring = new Monitoring();
-            ViewBag.Marks = monitoring.GetData();
             return View();
         }
 
-        public ActionResult About()
+        [HttpPost]
+        public ActionResult GetData(Analytics.MonitoringDataType type)
         {
-            //ViewBag.Message = "Your application description page.";
-            return View();
+            var analytics = _kernel.Get<Analytics>();
+            var data = analytics.GetData(type);
+
+            var serializer = new JavaScriptSerializer();
+            serializer.MaxJsonLength = int.MaxValue;
+            var serializedResult = serializer.Serialize(data);
+
+            return Content(serializedResult);
         }
 
-        public ActionResult Contact()
+        [HttpPost]
+        public JsonResult GetFlatsPopupData(IEnumerable<long> flatsIds)
         {
-            /*ViewBag.Message = "Your contact page.";
-            string url = "https://www.airbnb.com/rooms/13666788?check_in=2016-06-25&guests=1&check_out=2016-06-26";
-            string result = "NO RESULT";*/
+            var analytics = _kernel.Get<Analytics>();
 
-            /*ServicePointManager.ServerCertificateValidationCallback += ValidateRemoteCertificate;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-                                                   | SecurityProtocolType.Tls11
-                                                   | SecurityProtocolType.Tls12
-                                                   | SecurityProtocolType.Ssl3;*/
+            var startOfThePeriod = new DateTime(2016, 10, 1);
+            var endOfThePeriod = DateTime.Now;
+            var data = analytics.GetDataForFlats(flatsIds, startOfThePeriod, endOfThePeriod);
 
-            /*using (var client = new WebClient())
-            {
-                client.Headers.Add("User-Agent: Other");
-                result = client.DownloadString(url);
-            }*/
-
-            var viewModel = new ContaclViewModel() { UrlContent = "" };
-            return View(viewModel);
+            return Json(data);
         }
 
-        /// <summary>
-        /// Certificate validation callback.
-        /// </summary>
-        private static bool ValidateRemoteCertificate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)
+        [HttpPost]
+        public JsonResult GetOneFlatData(long flatId)
         {
-            return true;
+            var analytics = _kernel.Get<Analytics>();
 
-            // If the certificate is a valid, signed certificate, return true.
-            if (error == System.Net.Security.SslPolicyErrors.None)
-            {
-                return true;
-            }
+            var startOfThePeriod = new DateTime(2016, 10, 1);
+            var endOfThePeriod = DateTime.Now;
 
-            Console.WriteLine("X509Certificate [{0}] Policy Error: '{1}'",
-                cert.Subject,
-                error.ToString());
+            var flat = _db.GetFullFlatInfo(flatId);
+            var data = analytics.GetFlat(flat, startOfThePeriod, endOfThePeriod);
 
-            return false;
+            return Json(data);
         }
     }
 }

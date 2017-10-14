@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="MonitorModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Description">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Access" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="HouseRules" Type="nvarchar(max)" />
+          <Property Name="Interaction" Type="nvarchar(max)" />
+          <Property Name="Locale" Type="nvarchar(max)" />
+          <Property Name="Name" Type="nvarchar(max)" />
+          <Property Name="NeighborhoodOverview" Type="nvarchar(max)" />
+          <Property Name="Notes" Type="nvarchar(max)" />
+          <Property Name="Space" Type="nvarchar(max)" />
+          <Property Name="Summary" Type="nvarchar(max)" />
+          <Property Name="Transit" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Facilities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Kitchen" Type="bit" />
+          <Property Name="Internet" Type="bit" />
+          <Property Name="TV" Type="bit" />
+          <Property Name="ToiletAccessories" Type="bit" />
+          <Property Name="Heating" Type="bit" />
+          <Property Name="AirConditioner" Type="bit" />
+          <Property Name="WashingMashine" Type="bit" />
+          <Property Name="Dryer" Type="bit" />
+          <Property Name="FreeParking" Type="bit" />
+          <Property Name="WirelessInternet" Type="bit" />
+          <Property Name="CableTv" Type="bit" />
+          <Property Name="Breakfast" Type="bit" />
+          <Property Name="PetsAllowed" Type="bit" />
+          <Property Name="FamilyFriendly" Type="bit" />
+          <Property Name="EventsFriendly" Type="bit" />
+          <Property Name="SmokingAllowed" Type="bit" />
+          <Property Name="PeopleWithLimitedAbilities" Type="bit" />
+          <Property Name="Fireplace" Type="bit" />
+          <Property Name="Intercom" Type="bit" />
+          <Property Name="Porter" Type="bit" />
+          <Property Name="SwimingPoll" Type="bit" />
+          <Property Name="Jacuzzi" Type="bit" />
+          <Property Name="Gym" Type="bit" />
+          <Property Name="Shoulder" Type="bit" />
+          <Property Name="Iron" Type="bit" />
+          <Property Name="Hairdryer" Type="bit" />
+          <Property Name="NotebookWorkingPlace" Type="bit" />
+          <Property Name="Lift" Type="bit" />
+        </EntityType>
+        <EntityType Name="Flats">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" />
+          <Property Name="Latitude" Type="real" />
+          <Property Name="Longitude" Type="real" />
+          <Property Name="Country" Type="varchar(max)" />
+          <Property Name="City" Type="varchar(max)" />
+          <Property Name="Rating" Type="real" />
+          <Property Name="MaxGuests" Type="int" />
+          <Property Name="BedsCount" Type="int" />
+          <Property Name="BathroomsCount" Type="int" />
+          <Property Name="BedroomsCount" Type="int" />
+          <Property Name="RoomType" Type="nvarchar(max)" />
+          <Property Name="DescriptionId" Type="int" />
+          <Property Name="FacilitiesId" Type="int" />
+          <Property Name="MatchDescription" Type="real" />
+          <Property Name="Communication" Type="real" />
+          <Property Name="Cleanly" Type="real" />
+          <Property Name="Location" Type="real" />
+          <Property Name="Settlement" Type="real" />
+          <Property Name="PriceQualityRation" Type="real" />
+        </EntityType>
+        <EntityType Name="FlatStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="datetime2" Precision="7" />
+          <Property Name="Price" Type="smallint" />
+          <Property Name="Available" Type="bit" />
+          <Property Name="FlatId" Type="bigint" />
+          <Property Name="YearNum" Type="int" StoreGeneratedPattern="Computed" />
+          <Property Name="MonthNum" Type="int" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Message" Type="nvarchar(max)" />
+          <Property Name="Timestamp" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Proxyes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Url" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Port" Type="int" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Ping" Type="int" />
+          <Property Name="LastUsageTime" Type="datetime2" Precision="7" />
+          <Property Name="UseCount" Type="int" Nullable="false" />
+          <Property Name="Successes" Type="int" Nullable="false" />
+          <Property Name="Fails" Type="int" Nullable="false" />
+          <Property Name="Timeouts" Type="int" Nullable="false" />
+          <Property Name="TotalPing" Type="int" Nullable="false" />
+          <Property Name="AvgPing" Type="float" StoreGeneratedPattern="Computed" />
+          <Property Name="Efficiency" Type="float" StoreGeneratedPattern="Computed" />
+          <Property Name="Forbidden403" Type="int" Nullable="false" />
+          <Property Name="Active" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Settings">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LatestDay" Type="datetime2" Precision="7" />
+          <Property Name="Finished" Type="bit" />
+        </EntityType>
+        <Association Name="FK_Flats_Description">
+          <End Role="Description" Type="Self.Description" Multiplicity="0..1" />
+          <End Role="Flats" Type="Self.Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Description">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="DescriptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Flats_Facilities">
+          <End Role="Facilities" Type="Self.Facilities" Multiplicity="0..1" />
+          <End Role="Flats" Type="Self.Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="FacilitiesId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FlatStatuses_Flats">
+          <End Role="Flats" Type="Self.Flats" Multiplicity="0..1" />
+          <End Role="FlatStatuses" Type="Self.FlatStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flats">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FlatStatuses">
+              <PropertyRef Name="FlatId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MonitorModelStoreContainer">
+          <EntitySet Name="Description" EntityType="Self.Description" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Facilities" EntityType="Self.Facilities" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Flats" EntityType="Self.Flats" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FlatStatuses" EntityType="Self.FlatStatuses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Log" EntityType="Self.Log" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Proxyes" EntityType="Self.Proxyes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Settings" EntityType="Self.Settings" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Flats_Description" Association="Self.FK_Flats_Description">
+            <End Role="Description" EntitySet="Description" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flats_Facilities" Association="Self.FK_Flats_Facilities">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FlatStatuses_Flats" Association="Self.FK_FlatStatuses_Flats">
+            <End Role="Flats" EntitySet="Flats" />
+            <End Role="FlatStatuses" EntitySet="FlatStatuses" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="MonitorModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="MonitorEntities" annotation:LazyLoadingEnabled="true">
+          <FunctionImport Name="TestProc" ReturnType="Collection(MonitorModel.TestProc_Result)" />
+          <FunctionImport Name="TestProc2" ReturnType="Collection(MonitorModel.TestProc2_Result)" />
+          <EntitySet Name="Facilities" EntityType="MonitorModel.Facilities" />
+          <EntitySet Name="Flats" EntityType="MonitorModel.Flats" />
+          <EntitySet Name="FlatStatuses" EntityType="MonitorModel.FlatStatuses" />
+          <EntitySet Name="Log" EntityType="MonitorModel.Log" />
+          <EntitySet Name="Proxyes" EntityType="MonitorModel.Proxyes" />
+          <EntitySet Name="Settings" EntityType="MonitorModel.Settings" />
+          <AssociationSet Name="FK_Flats_Facilities" Association="MonitorModel.FK_Flats_Facilities">
+            <End Role="Facilities" EntitySet="Facilities" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FlatStatuses_Flats" Association="MonitorModel.FK_FlatStatuses_Flats">
+            <End Role="Flats" EntitySet="Flats" />
+            <End Role="FlatStatuses" EntitySet="FlatStatuses" />
+          </AssociationSet>
+          <EntitySet Name="Description" EntityType="MonitorModel.Description" />
+          <AssociationSet Name="FK_Flats_Description" Association="MonitorModel.FK_Flats_Description">
+            <End Role="Description" EntitySet="Description" />
+            <End Role="Flats" EntitySet="Flats" />
+          </AssociationSet>
+          </EntityContainer>
+        <ComplexType Name="TestProc_Result">
+          <Property Type="Int64" Name="Id" Nullable="false" />
+          <Property Type="Single" Name="Latitude" Nullable="true" />
+          <Property Type="Single" Name="Longitude" Nullable="true" />
+          <Property Type="String" Name="Country" Nullable="true" />
+          <Property Type="String" Name="City" Nullable="true" />
+          <Property Type="Single" Name="Rating" Nullable="true" />
+          <Property Type="Int32" Name="MaxGuests" Nullable="true" />
+          <Property Type="Int32" Name="BedsCount" Nullable="true" />
+          <Property Type="Int32" Name="BathroomsCount" Nullable="true" />
+          <Property Type="Int32" Name="BedroomsCount" Nullable="true" />
+          <Property Type="String" Name="RoomType" Nullable="true" />
+          <Property Type="Int32" Name="DescriptionId" Nullable="true" />
+          <Property Type="Int32" Name="FacilitiesId" Nullable="true" />
+          <Property Type="Single" Name="MatchDescription" Nullable="true" />
+          <Property Type="Single" Name="Communication" Nullable="true" />
+          <Property Type="Single" Name="Cleanly" Nullable="true" />
+          <Property Type="Single" Name="Location" Nullable="true" />
+          <Property Type="Single" Name="Settlement" Nullable="true" />
+          <Property Type="Single" Name="PriceQualityRation" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="TestProc2_Result">
+          <Property Type="Int64" Name="FlatId" Nullable="true" />
+          <Property Type="Int32" Name="YearNum" Nullable="true" />
+          <Property Type="Int32" Name="MonthNum" Nullable="true" />
+          <Property Type="Int32" Name="cnt" Nullable="true" />
+          <Property Type="Int32" Name="occ" Nullable="true" />
+          <Property Type="Int32" Name="rvn" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="Facilities">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Kitchen" Type="Boolean" />
+          <Property Name="Internet" Type="Boolean" />
+          <Property Name="TV" Type="Boolean" />
+          <Property Name="ToiletAccessories" Type="Boolean" />
+          <Property Name="Heating" Type="Boolean" />
+          <Property Name="AirConditioner" Type="Boolean" />
+          <Property Name="WashingMashine" Type="Boolean" />
+          <Property Name="Dryer" Type="Boolean" />
+          <Property Name="FreeParking" Type="Boolean" />
+          <Property Name="WirelessInternet" Type="Boolean" />
+          <Property Name="CableTv" Type="Boolean" />
+          <Property Name="Breakfast" Type="Boolean" />
+          <Property Name="PetsAllowed" Type="Boolean" />
+          <Property Name="FamilyFriendly" Type="Boolean" />
+          <Property Name="EventsFriendly" Type="Boolean" />
+          <Property Name="SmokingAllowed" Type="Boolean" />
+          <Property Name="PeopleWithLimitedAbilities" Type="Boolean" />
+          <Property Name="Fireplace" Type="Boolean" />
+          <Property Name="Intercom" Type="Boolean" />
+          <Property Name="Porter" Type="Boolean" />
+          <Property Name="SwimingPoll" Type="Boolean" />
+          <Property Name="Jacuzzi" Type="Boolean" />
+          <Property Name="Gym" Type="Boolean" />
+          <Property Name="Shoulder" Type="Boolean" />
+          <Property Name="Iron" Type="Boolean" />
+          <Property Name="Hairdryer" Type="Boolean" />
+          <Property Name="NotebookWorkingPlace" Type="Boolean" />
+          <Property Name="Lift" Type="Boolean" />
+          <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_Flats_Facilities" FromRole="Facilities" ToRole="Flats" />
+        </EntityType>
+        <EntityType Name="Flats">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" />
+          <Property Name="Latitude" Type="Single" />
+          <Property Name="Longitude" Type="Single" />
+          <Property Name="Country" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="Single" />
+          <Property Name="MaxGuests" Type="Int32" />
+          <Property Name="BedsCount" Type="Int32" />
+          <Property Name="BathroomsCount" Type="Int32" />
+          <Property Name="BedroomsCount" Type="Int32" />
+          <Property Name="RoomType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DescriptionId" Type="Int32" />
+          <Property Name="FacilitiesId" Type="Int32" />
+          <Property Name="MatchDescription" Type="Single" />
+          <Property Name="Communication" Type="Single" />
+          <Property Name="Cleanly" Type="Single" />
+          <Property Name="Location" Type="Single" />
+          <Property Name="Settlement" Type="Single" />
+          <Property Name="PriceQualityRation" Type="Single" />
+          <NavigationProperty Name="Facilities" Relationship="MonitorModel.FK_Flats_Facilities" FromRole="Flats" ToRole="Facilities" />
+          <NavigationProperty Name="FlatStatuses" Relationship="MonitorModel.FK_FlatStatuses_Flats" FromRole="Flats" ToRole="FlatStatuses" />
+          <NavigationProperty Name="Description" Relationship="MonitorModel.FK_Flats_Description" FromRole="Flats" ToRole="Description" />
+        </EntityType>
+        <EntityType Name="FlatStatuses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Precision="7" />
+          <Property Name="Price" Type="Int16" />
+          <Property Name="Available" Type="Boolean" />
+          <Property Name="FlatId" Type="Int64" />
+          <Property Name="YearNum" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="MonthNum" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_FlatStatuses_Flats" FromRole="FlatStatuses" ToRole="Flats" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Timestamp" Type="DateTime" Precision="7" />
+        </EntityType>
+        <EntityType Name="Proxyes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Url" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Port" Type="Int32" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="Ping" Type="Int32" />
+          <Property Name="LastUsageTime" Type="DateTime" Precision="7" />
+          <Property Name="UseCount" Type="Int32" Nullable="false" />
+          <Property Name="Successes" Type="Int32" Nullable="false" />
+          <Property Name="Fails" Type="Int32" Nullable="false" />
+          <Property Name="Timeouts" Type="Int32" Nullable="false" />
+          <Property Name="TotalPing" Type="Int32" Nullable="false" />
+          <Property Name="AvgPing" Type="Double" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="Efficiency" Type="Double" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="Forbidden403" Type="Int32" Nullable="false" />
+          <Property Name="Active" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Settings">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LatestDay" Type="DateTime" Precision="7" />
+          <Property Name="Finished" Type="Boolean" />
+        </EntityType>
+        <Association Name="FK_Flats_Facilities">
+          <End Type="MonitorModel.Facilities" Role="Facilities" Multiplicity="0..1" />
+          <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Facilities">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="FacilitiesId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FlatStatuses_Flats">
+          <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="0..1" />
+          <End Type="MonitorModel.FlatStatuses" Role="FlatStatuses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flats">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="FlatStatuses">
+              <PropertyRef Name="FlatId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Description">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Access" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Description1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="HouseRules" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Interaction" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Locale" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NeighborhoodOverview" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Space" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Summary" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Transit" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Flats" Relationship="MonitorModel.FK_Flats_Description" FromRole="Description" ToRole="Flats" />
+        </EntityType>
+        <Association Name="FK_Flats_Description">
+          <End Type="MonitorModel.Description" Role="Description" Multiplicity="0..1" />
+          <End Type="MonitorModel.Flats" Role="Flats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Description">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flats">
+              <PropertyRef Name="DescriptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="MonitorModelStoreContainer" CdmEntityContainer="MonitorEntities">
+    <EntitySetMapping Name="Facilities">
+      <EntityTypeMapping TypeName="IsTypeOf(MonitorModel.Facilities)">
+        <MappingFragment StoreEntitySet="Facilities">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Kitchen" ColumnName="Kitchen" />
+          <ScalarProperty Name="Internet" ColumnName="Internet" />
+          <ScalarProperty Name="TV" ColumnName="TV" />
+          <ScalarProperty Name="ToiletAccessories" ColumnName="ToiletAccessories" />
+          <ScalarProperty Name="Heating" ColumnName="Heating" />
+          <ScalarProperty Name="AirConditioner" ColumnName="AirConditioner" />
+          <ScalarProperty Name="WashingMashine" ColumnName="WashingMashine" />
+          <ScalarProperty Name="Dryer" ColumnName="Dryer" />
+          <ScalarProperty Name="FreeParking" ColumnName="FreeParking" />
+          <ScalarProperty Name="WirelessInternet" ColumnName="WirelessInternet" />
+          <ScalarProperty Name="CableTv" ColumnName="CableTv" />
+          <ScalarProperty Name="Breakfast" ColumnName="Breakfast" />
+          <ScalarProperty Name="PetsAllowed" ColumnName="PetsAllowed" />
+          <ScalarProperty Name="FamilyFriendly" ColumnName="FamilyFriendly" />
+          <ScalarProperty Name="EventsFriendly" ColumnName="EventsFriendly" />
+          <ScalarProperty Name="SmokingAllowed" ColumnName="SmokingAllowed" />
+          <ScalarProperty Name="PeopleWithLimitedAbilities" ColumnName="PeopleWithLimitedAbilities" />
+          <ScalarProperty Name="Fireplace" ColumnName="Fireplace" />
+          <ScalarProperty Name="Intercom" ColumnName="Intercom" />
+          <ScalarProperty Name="Porter" ColumnName="Porter" />
+          <ScalarProperty Name="SwimingPoll" ColumnName="SwimingPoll" />
+          <ScalarProperty Name="Jacuzzi" ColumnName="Jacuzzi" />
+          <ScalarProperty Name="Gym" ColumnName="Gym" />
+          <ScalarProperty Name="Shoulder" ColumnName="Shoulder" />
+          <ScalarProperty Name="Iron" ColumnName="Iron" />
+          <ScalarProperty Name="Hairdryer" ColumnName="Hairdryer" />
+          <ScalarProperty Name="NotebookWorkingPlace" ColumnName="NotebookWorkingPlace" />
+          <ScalarProperty Name="Lift" ColumnName="Lift" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Flats">
+      <EntityTypeMapping TypeName="IsTypeOf(MonitorModel.Flats)">
+        <MappingFragment StoreEntitySet="Flats">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+          <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+          <ScalarProperty Name="Country" ColumnName="Country" />
+          <ScalarProperty Name="City" ColumnName="City" />
+          <ScalarProperty Name="Rating" ColumnName="Rating" />
+          <ScalarProperty Name="MaxGuests" ColumnName="MaxGuests" />
+          <ScalarProperty Name="BedsCount" ColumnName="BedsCount" />
+          <ScalarProperty Name="BathroomsCount" ColumnName="BathroomsCount" />
+          <ScalarProperty Name="BedroomsCount" ColumnName="BedroomsCount" />
+          <ScalarProperty Name="RoomType" ColumnName="RoomType" />
+          <ScalarProperty Name="DescriptionId" ColumnName="DescriptionId" />
+          <ScalarProperty Name="FacilitiesId" ColumnName="FacilitiesId" />
+          <ScalarProperty Name="MatchDescription" ColumnName="MatchDescription" />
+          <ScalarProperty Name="Communication" ColumnName="Communication" />
+          <ScalarProperty Name="Cleanly" ColumnName="Cleanly" />
+          <ScalarProperty Name="Location" ColumnName="Location" />
+          <ScalarProperty Name="Settlement" ColumnName="Settlement" />
+          <ScalarProperty Name="PriceQualityRation" ColumnName="PriceQualityRation" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FlatStatuses">
+      <EntityTypeMapping TypeName="IsTypeOf(MonitorModel.FlatStatuses)">
+        <MappingFragment StoreEntitySet="FlatStatuses">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Price" ColumnName="Price" />
+          <ScalarProperty Name="Available" ColumnName="Available" />
+          <ScalarProperty Name="FlatId" ColumnName="FlatId" />
+          <ScalarProperty Name="YearNum" ColumnName="YearNum" />
+          <ScalarProperty Name="MonthNum" ColumnName="MonthNum" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Log">
+      <EntityTypeMapping TypeName="IsTypeOf(MonitorModel.Log)">
+        <MappingFragment StoreEntitySet="Log">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Proxyes">
+      <EntityTypeMapping TypeName="IsTypeOf(MonitorModel.Proxyes)">
+        <MappingFragment StoreEntitySet="Proxyes">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Url" ColumnName="Url" />
+          <ScalarProperty Name="Port" ColumnName="Port" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Ping" ColumnName="Ping" />
+          <ScalarProperty Name="LastUsageTime" ColumnName="LastUsageTime" />
+          <ScalarProperty Name="UseCount" ColumnName="UseCount" />
+          <ScalarProperty Name="Successes" ColumnName="Successes" />
+          <ScalarProperty Name="Fails" ColumnName="Fails" />
+          <ScalarProperty Name="Timeouts" ColumnName="Timeouts" />
+          <ScalarProperty Name="TotalPing" ColumnName="TotalPing" />
+          <ScalarProperty Name="AvgPing" ColumnName="AvgPing" />
+          <ScalarProperty Name="Efficiency" ColumnName="Efficiency" />
+          <ScalarProperty Name="Forbidden403" ColumnName="Forbidden403" />
+          <ScalarProperty Name="Active" ColumnName="Active" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Settings">
+      <EntityTypeMapping TypeName="IsTypeOf(MonitorModel.Settings)">
+        <MappingFragment StoreEntitySet="Settings">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="LatestDay" ColumnName="LatestDay" />
+          <ScalarProperty Name="Finished" ColumnName="Finished" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+          <EntitySetMapping Name="Description">
+            <EntityTypeMapping TypeName="MonitorModel.Description">
+              <MappingFragment StoreEntitySet="Description">
+                <ScalarProperty Name="Transit" ColumnName="Transit" />
+                <ScalarProperty Name="Summary" ColumnName="Summary" />
+                <ScalarProperty Name="Space" ColumnName="Space" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="NeighborhoodOverview" ColumnName="NeighborhoodOverview" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Locale" ColumnName="Locale" />
+                <ScalarProperty Name="Interaction" ColumnName="Interaction" />
+                <ScalarProperty Name="HouseRules" ColumnName="HouseRules" />
+                <ScalarProperty Name="Description1" ColumnName="Description" />
+                <ScalarProperty Name="Access" ColumnName="Access" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

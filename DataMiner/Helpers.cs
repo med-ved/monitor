@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DataMiner
+﻿namespace DataMiner
 {
-    class Helpers
+    using System;
+    using System.Collections.Generic;
+
+    static class Helpers
     {
         public static dynamic GetIfExists(dynamic data, string value)
         {
+            if (data == null)
+            {
+                return null;
+            }
+
             return GetIfExists(data, new[] { value });
         }
 
         public static dynamic GetIfExists(dynamic data, string[] path)
         {
+            if (data == null)
+            {
+                return null;
+            }
+
             dynamic result = data;
             for (int i = 0; i < path.Length; i++)
             {
@@ -44,7 +51,7 @@ namespace DataMiner
             {
                 return ((ICollection<string>)obj.Keys).Contains(name);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

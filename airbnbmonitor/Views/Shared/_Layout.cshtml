@@ -4,35 +4,41 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title – приложение ASP.NET</title>
+    <title>AirBnB monitor</title>
+
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7sW5bpraT9znjsBz9icBIpCRtElY7IKs"></script>
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Имя приложения", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-        </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year – приложение ASP.NET</p>
-        </footer>
-    </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/monitor")
-    @RenderSection("scripts", required: false)
+    @RenderBody()
+
+    @Scripts.Render("~/bundles/scripts")
+
+    <script src="@Url.Content("~/Scripts/common.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/actions.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/stores/baseStore.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/popup.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/container.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/component.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/overlay.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/textGridItem.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/textGrid.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/loadingAnimation.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/headerButton.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/header.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/widget.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/stores/dataStore.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/stores/flatsPopupDataStore.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/stores/oneFlatDetailsStore.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/charts/lineChart.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/charts/lineChart.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/charts/donutChart.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/chartsPanel.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/flatsPopup.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/oneFlatDetailsPopup.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/components/map.jsx")"></script>
+    <script src="@Url.Content("~/Scripts/app.jsx")"></script>
+
 </body>
 </html>

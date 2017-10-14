@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
-
-namespace airbnbmonitor
+﻿namespace airbnbmonitor
 {
+    using System.Web.Mvc;
+    using System.Web.Optimization;
+    using System.Web.Routing;
+    using Ninject;
+    using DataMiner.Database;
+
     public class MvcApplication : System.Web.HttpApplication
     {
+        private static IKernel _kernel;
+        private static DataMiner.Program _dataMiner;
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -18,8 +18,16 @@ namespace airbnbmonitor
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            var pm = new DataMiner.Program();
-            pm.Run();
+            if (_kernel == null)
+            {
+                _kernel = DependencyResolver.Current.GetService<IKernel>();
+            }
+
+            if (_dataMiner == null)
+            {
+                _dataMiner = _kernel.Get<DataMiner.Program>();
+                //_dataMiner.Run();
+            }
         }
     }
 }

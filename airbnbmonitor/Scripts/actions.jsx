@@ -1,0 +1,1 @@
+﻿var Actions = Reflux.createActions(["setMapData", "updateMap", "getFlatsPopupData", "getOneFlatDetailsPopupData"]);
