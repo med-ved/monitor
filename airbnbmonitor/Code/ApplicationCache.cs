@@ -112,6 +112,7 @@
                     if (m.Month > 9 || m.Month < 5)
                     {
                         m.Count = 0;
+                        m.Occupacy = 0;
                         m.EstimatedMonthlyRevenue = 0;
                         m.OccupacyPercent = 0;
                         m.Revenue = 0;
