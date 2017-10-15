@@ -13,3 +13,7 @@
 /packages/CsQueryLaster.1.3.5.200
 /packages/Antlr.3.4.1.9004/lib
 /packages/Microsoft.ApplicationInsights.Agent.Intercept.1.2.1
+*._
+*.dll
+/packages/bootstrap.3.0.0/*.nupkg
+*.nupkg
