@@ -80,9 +80,9 @@
             try
             {
                 var loader = ObjectCreator.Get<LoaderWithTimeout>();
-                loader.LoadUrl(url, p);
+                var result = loader.LoadUrl(url, p);
 
-                return true;
+                return !result.Cancelled && result.Error == null;
             }
             catch (Exception)
             {

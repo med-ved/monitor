@@ -72,7 +72,7 @@
                 }
 
                 TestFlatMonthlySummary(lineChart[3], new DateTime(2017, 1, 1), 37200, 80.0d, 1500.0d);
-                TestDistributionGraph(data.GraphData.DistributionByRevenue, 1, new double[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+                TestDistributionGraph(data.GraphData.DistributionByRevenue, 1, new double[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 });
                 TestDistributionGraph(data.GraphData.DistributionByOccupacy, 1, new double[] { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 });
             }
 
@@ -122,7 +122,7 @@
                 }
 
                 TestFlatMonthlySummary(lineChart[3], new DateTime(2017, 1, 1), 37200, 80.0d, 1500.0d);
-                TestDistributionGraph(data.GraphData.DistributionByRevenue, 1, new double[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 });
+                TestDistributionGraph(data.GraphData.DistributionByRevenue, 1, new double[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 });
                 TestDistributionGraph(data.GraphData.DistributionByOccupacy, 1, new double[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 });
             }
 
@@ -186,7 +186,7 @@
 
                 TestFlatMonthlySummary(lineChart[3], new DateTime(2017, 1, 1), 40742, 84.6d, 1550);
                 TestFlatMonthlySummary(lineChart[5], new DateTime(2017, 3, 1), 62000, 75.0d, 2666);
-                TestDistributionGraph(data.GraphData.DistributionByRevenue, 2, new double[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 });
+                TestDistributionGraph(data.GraphData.DistributionByRevenue, 2, new double[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 });
                 TestDistributionGraph(data.GraphData.DistributionByOccupacy, 2, new double[] { 0, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 0 });
             }
 

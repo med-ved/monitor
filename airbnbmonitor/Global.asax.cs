@@ -26,7 +26,7 @@
             if (_dataMiner == null)
             {
                 _dataMiner = _kernel.Get<DataMiner.Program>();
-                //_dataMiner.Run();
+                _dataMiner.Run();
             }
         }
     }
