@@ -1,6 +1,7 @@
 ﻿namespace airbnbmonitor
 {
     using System.Web.Optimization;
+    using System.Web.Optimization.React;
 
     public class BundleConfig
     {
@@ -22,6 +23,37 @@
                         "~/Scripts/libs/reflux.min.js",
 
                         "~/Scripts/objectAssign.js"));
+
+            bundles.Add(new BabelBundle("~/bundles/jsx").Include(
+                // Add your JSX files here
+                "~/Scripts/actions.jsx",
+                "~/Scripts/common.jsx",
+
+                "~/Scripts/charts/donutChart.jsx",
+                "~/Scripts/charts/lineChart.jsx",
+
+                "~/Scripts/components/chartsPanel.jsx",
+                "~/Scripts/components/component.jsx",
+                "~/Scripts/components/container.jsx",
+                "~/Scripts/components/flatsPopup.jsx",
+                "~/Scripts/components/header.jsx",
+                "~/Scripts/components/headerButton.jsx",
+                "~/Scripts/components/loadingAnimation.jsx",
+                "~/Scripts/components/map.jsx",
+                "~/Scripts/components/oneFlatDetailsPopup.jsx",
+                "~/Scripts/components/overlay.jsx",
+                "~/Scripts/components/popup.jsx",
+                "~/Scripts/components/textGrid.jsx",
+                "~/Scripts/components/textGridItem.jsx",
+                "~/Scripts/components/widget.jsx",
+
+                "~/Scripts/stores/baseStore.jsx",
+                "~/Scripts/stores/dataStore.jsx",
+                "~/Scripts/stores/flatsPopupDataStore.jsx",
+                "~/Scripts/stores/oneFlatDetailsStore.jsx",
+                
+                "~/Scripts/app.jsx"
+            ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/site.css"));
