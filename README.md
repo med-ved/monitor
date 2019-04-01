@@ -2,8 +2,6 @@
 
 This project collects and visualize data for short-time rent market in Sankt-Petersburg
 
-[Working version deployed here](http://medved-001-site1.gtempurl.com/)
-
 Project consists of two parts
 #### 1. DataMiner (C#, EntityFramework)
 
