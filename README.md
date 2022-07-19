@@ -10,3 +10,5 @@ Collects data from AirBnb for Sankt-Petersburg on daily basis
 #### 2. airbnbmonitor (C#, Javascript, React, Reflux)
 
 Visualize collected data via charts and google map
+
+UPD: Seems that it's not that profitable, especially after COVID started
